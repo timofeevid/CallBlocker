@@ -40,4 +40,6 @@
     <string name="widget_last_blocked">Последний заблокированный:
 %1$s
 %2$s</string>
+    <string name="widget_recently_blocked">Недавно заблокированные:</string>
+    <string name="widget_blocked_item">%1$s в %2$s</string>
 </resources>

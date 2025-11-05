@@ -5,43 +5,43 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/widget_background">
+    android:background="@drawable/widget_background_dark">
 
-    <TextView
-        android:id="@+id/widget_service_status"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Service: Active ✓"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="#4CAF50"
-        android:layout_marginBottom="4dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/widget_block_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_blocking_on"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#4CAF50" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/widget_blocking_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Blocking: ON"
+        android:text="@string/widget_recently_blocked"
         android:textSize="12sp"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/widget_last_call_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Last screened: 5m ago"
-        android:textSize="11sp"
+        android:textStyle="bold"
         android:textColor="#CCCCCC"
         android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/widget_last_blocked"
+    <LinearLayout
+        android:id="@+id/widget_blocked_calls_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Last blocked:\n+1234567890\nJan 15, 14:30"
-        android:textSize="10sp"
-        android:textColor="#FFCCCC"
-        android:visibility="gone" />
+        android:orientation="vertical">
+
+        <!-- Blocked call items will be added here dynamically -->
+
+    </LinearLayout>
 
 </LinearLayout>

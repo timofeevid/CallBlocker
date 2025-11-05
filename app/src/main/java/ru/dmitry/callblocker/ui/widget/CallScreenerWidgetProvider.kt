@@ -6,17 +6,16 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import android.widget.RemoteViews
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.R
-import ru.dmitry.callblocker.core.DateUtils
-import ru.dmitry.callblocker.core.DateUtils.toFormatter
 import ru.dmitry.callblocker.data.AppConfigurationRepository
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.ui.main.MainActivity
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,62 +37,92 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         }
     }
 
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        
+        when (intent.action) {
+            ACTION_TOGGLE_BLOCK -> {
+                val blockStatus = intent.getBooleanExtra(EXTRA_BLOCK_STATUS, false)
+                appConfigurationRepository.setBlockUnknownNumbers(!blockStatus) // Toggle the status
+                updateAllWidgets(context)
+            }
+        }
+    }
+
     private fun updateAppWidget(
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int
     ) {
-        val lastCallTime = appConfigurationRepository.getLastCallScreenedTime()
-        val calls = callHistoryRepository.getScreenedCalls()
-        val lastBlockedCall = calls.firstOrNull { it.wasBlocked }
         val blockEnabled = appConfigurationRepository.shouldBlockUnknownNumbers()
+        val calls = callHistoryRepository.getScreenedCalls()
+        val blockedCalls = calls.filter { it.wasBlocked }.take(3)
 
         val views = RemoteViews(context.packageName, R.layout.widget_call_screener)
 
+        // Set blocking status text and color
         views.setTextViewText(
-            R.id.widget_blocking_status,
-            if (blockEnabled) context.getString(R.string.widget_blocking_on) else context.getString(
-                R.string.widget_blocking_off
-            )
+            R.id.widget_block_toggle,
+            if (blockEnabled) context.getString(R.string.widget_blocking_on) else context.getString(R.string.widget_blocking_off)
         )
-
-        val timeText = if (lastCallTime > 0) {
-            val timeAgo =
-                DateUtils.getTimeAgoString(System.currentTimeMillis() - lastCallTime, context)
-            context.getString(R.string.widget_last_screened, timeAgo)
-        } else {
-            context.getString(R.string.widget_no_calls)
+        views.setTextColor(
+            R.id.widget_block_toggle,
+            if (blockEnabled) 0xFF4CAF50.toInt() else 0xFFFF5252.toInt() // Green when enabled, red when disabled
+        )
+        
+        // Set toggle click listener
+        val toggleIntent = Intent(context, CallScreenerWidgetProvider::class.java).apply {
+            action = ACTION_TOGGLE_BLOCK
+            putExtra(EXTRA_BLOCK_STATUS, blockEnabled)
         }
-        views.setTextViewText(R.id.widget_last_call_time, timeText)
+        val togglePendingIntent = PendingIntent.getBroadcast(
+            context,
+            appWidgetId,
+            toggleIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        views.setOnClickPendingIntent(R.id.widget_block_toggle, togglePendingIntent)
 
-        if (lastBlockedCall != null) {
-            val contactName =
-                ContactsRepository(context).getContactName(lastBlockedCall.phoneNumber)
-            val displayName = contactName ?: lastBlockedCall.phoneNumber
-            val dateFormat = DateUtils.DD_MM_YYYY_HH_MM.toFormatter()
-            val date = dateFormat.format(Date(lastBlockedCall.timestamp))
-            views.setTextViewText(
-                R.id.widget_last_blocked,
-                context.getString(R.string.widget_last_blocked, displayName, date)
-            )
-            views.setViewVisibility(R.id.widget_last_blocked, View.VISIBLE)
-        } else {
-            views.setViewVisibility(R.id.widget_last_blocked, View.GONE)
-        }
-
+        // Set click listener for the whole widget to open the app
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context,
-            0,
+            appWidgetId,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
+        // Clear previous views
+        views.removeAllViews(R.id.widget_blocked_calls_container)
+        
+        // Add blocked calls
+        if (blockedCalls.isNotEmpty()) {
+            for (call in blockedCalls) {
+                val itemView = RemoteViews(context.packageName, R.layout.widget_blocked_call_item)
+                
+                // Get contact name or show phone number
+                val contactName = ContactsRepository(context).getContactName(call.phoneNumber)
+                val displayName = contactName ?: call.phoneNumber
+                
+                // Format time as HH:mm
+                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val timeText = timeFormat.format(Date(call.timestamp))
+                
+                itemView.setTextViewText(R.id.widget_blocked_number, displayName)
+                itemView.setTextViewText(R.id.widget_blocked_time, timeText)
+                
+                views.addView(R.id.widget_blocked_calls_container, itemView)
+            }
+        }
+
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
     companion object {
+        private const val ACTION_TOGGLE_BLOCK = "ru.dmitry.callblocker.TOGGLE_BLOCK"
+        private const val EXTRA_BLOCK_STATUS = "extra_block_status"
+        
         fun updateAllWidgets(context: Context) {
             val intent = Intent(context, CallScreenerWidgetProvider::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE

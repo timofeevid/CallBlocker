@@ -38,4 +38,6 @@
     <string name="widget_last_screened">Last screened: %1$s</string>
     <string name="widget_no_calls">No calls screened yet</string>
     <string name="widget_last_blocked">Last blocked:\n%1$s\n%2$s</string>
+    <string name="widget_recently_blocked">Recently Blocked:</string>
+    <string name="widget_blocked_item">%1$s at %2$s</string>
 </resources>
