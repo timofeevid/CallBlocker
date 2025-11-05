@@ -1,18 +1,30 @@
 package ru.dmitry.callblocker.ui.main
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
-import ru.dmitry.callblocker.data.CallHistoryRepository
+import kotlinx.coroutines.launch
 import ru.dmitry.callblocker.data.AppConfigurationRepository
+import ru.dmitry.callblocker.data.CallHistoryRepository
+import javax.inject.Inject
 
-class MainScreenViewModel : ViewModel() {
+@HiltViewModel
+class MainScreenViewModel @Inject constructor(
+    private val appConfigurationRepository: AppConfigurationRepository,
+    private val callHistoryRepository: CallHistoryRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainScreenUiState())
     val uiState: StateFlow<MainScreenUiState> = _uiState.asStateFlow()
+
+    init {
+        observeCallLog()
+    }
 
     fun updatePermissionStatus(hasPermissions: Boolean) {
         _uiState.update { it.copy(hasPermissions = hasPermissions) }
@@ -22,29 +34,49 @@ class MainScreenViewModel : ViewModel() {
         _uiState.update { it.copy(hasScreeningRole = boolean) }
     }
 
-    fun loadCallLog(context: Context) {
-        val calls = CallHistoryRepository.getScreenedCalls(context)
-        val blockEnabled = AppConfigurationRepository.shouldBlockUnknownNumbers(context)
-        val lastCallTime = AppConfigurationRepository.getLastCallScreenedTime(context)
-        val lastBlocked = calls.firstOrNull { it.wasBlocked }
+    fun loadCallLog() {
+        viewModelScope.launch {
+            val calls = callHistoryRepository.getScreenedCalls()
+            val blockEnabled = appConfigurationRepository.shouldBlockUnknownNumbers()
+            val lastCallTime = appConfigurationRepository.getLastCallScreenedTime()
+            val lastBlocked = calls.firstOrNull { it.wasBlocked }
 
-        _uiState.update {
-            it.copy(
-                screenedCalls = calls,
-                blockUnknownCalls = blockEnabled,
-                lastCallScreenedTime = lastCallTime,
-                lastBlockedCall = lastBlocked
-            )
+            _uiState.update {
+                it.copy(
+                    screenedCalls = calls,
+                    blockUnknownCalls = blockEnabled,
+                    lastCallScreenedTime = lastCallTime,
+                    lastBlockedCall = lastBlocked
+                )
+            }
         }
     }
 
-    fun toggleBlockUnknownCalls(context: Context, enabled: Boolean) {
-        AppConfigurationRepository.setBlockUnknownNumbers(context, enabled)
+    private fun observeCallLog() {
+        viewModelScope.launch {
+            callHistoryRepository.observeScreenedCalls().collectLatest { calls ->
+                val blockEnabled = appConfigurationRepository.shouldBlockUnknownNumbers()
+                val lastCallTime = appConfigurationRepository.getLastCallScreenedTime()
+                val lastBlocked = calls.firstOrNull { it.wasBlocked }
+
+                _uiState.update {
+                    it.copy(
+                        screenedCalls = calls,
+                        blockUnknownCalls = blockEnabled,
+                        lastCallScreenedTime = lastCallTime,
+                        lastBlockedCall = lastBlocked
+                    )
+                }
+            }
+        }
+    }
+
+    fun toggleBlockUnknownCalls(enabled: Boolean) {
+        appConfigurationRepository.setBlockUnknownNumbers(enabled)
         _uiState.update { it.copy(blockUnknownCalls = enabled) }
     }
 
-    fun clearCallLog(context: Context) {
-        CallHistoryRepository.clearCallLog(context)
-        _uiState.update { it.copy(screenedCalls = emptyList()) }
+    fun clearCallLog() {
+        callHistoryRepository.clearCallLog()
     }
 }

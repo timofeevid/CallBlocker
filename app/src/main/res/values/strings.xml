@@ -1,43 +1,43 @@
 <resources>
     <string name="app_name">CallBlocker</string>
-    <string name="widget_description">Shows call screening status and last blocked call</string>
+    <string name="widget_description">Показывает статус фильтрации звонков и последний заблокированный звонок</string>
     
     <!-- Main Screen Strings -->
-    <string name="call_screener_title">Call Screener</string>
-    <string name="service_active">Service Active</string>
-    <string name="service_inactive">Service Inactive</string>
-    <string name="never">Never</string>
-    <string name="last_call_screened">Last call screened: %1$s</string>
-    <string name="last_blocked_call">Last blocked: %1$s</string>
-    <string name="setup_status_title">Setup Status</string>
-    <string name="permissions_label">Permissions</string>
-    <string name="call_screening_label">Call Screening</string>
-    <string name="request_permissions_button">Request Permissions</string>
-    <string name="enable_call_screening_button">Enable Call Screening</string>
-    <string name="granted_status">Granted</string>
-    <string name="not_granted_status">Not Granted</string>
-    <string name="call_blocking_title">Call Blocking</string>
-    <string name="block_unknown_numbers_label">Block Unknown Numbers</string>
-    <string name="block_unknown_numbers_description">When enabled, calls from numbers not in your contacts will be automatically rejected.</string>
-    <string name="screened_calls_title">Screened Calls</string>
-    <string name="clear_button">Clear</string>
-    <string name="no_screened_calls">No screened calls yet</string>
-    <string name="blocked_status">BLOCKED</string>
-    <string name="screened_status">SCREENED</string>
-    <string name="days_ago">%1$d day%2$s ago</string>
-    <string name="hours_ago">%1$d hour%2$s ago</string>
-    <string name="minutes_ago">%1$d minute%2$s ago</string>
-    <string name="seconds_ago">%1$d second%2$s ago</string>
-    <string name="just_now">Just now</string>
+    <string name="call_screener_title">Фильтр звонков</string>
+    <string name="service_active">Служба активна</string>
+    <string name="service_inactive">Служба неактивна</string>
+    <string name="never">Никогда</string>
+    <string name="last_call_screened">Последний проверенный звонок: %1$s</string>
+    <string name="last_blocked_call">Последний заблокированный: %1$s</string>
+    <string name="setup_status_title">Статус настройки</string>
+    <string name="permissions_label">Разрешения</string>
+    <string name="call_screening_label">Фильтрация звонков</string>
+    <string name="request_permissions_button">Запросить разрешения</string>
+    <string name="enable_call_screening_button">Включить фильтрацию звонков</string>
+    <string name="granted_status">Предоставлено</string>
+    <string name="not_granted_status">Не предоставлено</string>
+    <string name="call_blocking_title">Блокировка звонков</string>
+    <string name="block_unknown_numbers_label">Блокировать неизвестные номера</string>
+    <string name="block_unknown_numbers_description">Когда включено, звонки с номеров, не находящихся в ваших контактах, будут автоматически отклоняться.</string>
+    <string name="screened_calls_title">Звонки</string>
+    <string name="clear_button">Очистить</string>
+    <string name="no_screened_calls">Пока нет проверенных звонков</string>
+    <string name="blocked_status">ЗАБЛОКИРОВАН</string>
+    <string name="screened_status">ПРОВЕРЕН</string>
+    <string name="days_ago">%1$d день%2$s назад</string>
+    <string name="hours_ago">%1$d час%2$s назад</string>
+    <string name="minutes_ago">%1$d минут%2$s назад</string>
+    <string name="seconds_ago">%1$d секунд%2$s назад</string>
+    <string name="just_now">Только что</string>
     
     <!-- Widget Strings -->
-    <string name="widget_service_active">Service: Active ✓</string>
-    <string name="widget_service_inactive">Service: Inactive ✗</string>
-    <string name="widget_blocking_on">Blocking: ON</string>
-    <string name="widget_blocking_off">Blocking: OFF</string>
-    <string name="widget_last_screened">Last screened: %1$s</string>
-    <string name="widget_no_calls">No calls screened yet</string>
-    <string name="widget_last_blocked">Last blocked:
+    <string name="widget_service_active">Служба: Активна ✓</string>
+    <string name="widget_service_inactive">Служба: Неактивна ✗</string>
+    <string name="widget_blocking_on">Блокировка: ВКЛ</string>
+    <string name="widget_blocking_off">Блокировка: ВЫКЛ</string>
+    <string name="widget_last_screened">Последний проверенный: %1$s</string>
+    <string name="widget_no_calls">Пока нет проверенных звонков</string>
+    <string name="widget_last_blocked">Последний заблокированный:
 %1$s
 %2$s</string>
 </resources>

@@ -1,83 +1,97 @@
 package ru.dmitry.callblocker.data
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
-import org.json.JSONArray
-import org.json.JSONObject
+import androidx.core.content.edit
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.core.CONST
+import ru.dmitry.callblocker.data.model.CallEntry
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 
-// TODO добавить инжект и получение префов. Добавить прослушивание обновлений через flow
-object CallHistoryRepository {
+class CallHistoryRepository(
+    private val context: Context
+) {
 
-    private const val PREFS_NAME = "CallScreenerPrefs"
-    private const val KEY_CALL_LOG = "screened_calls_log"
+    companion object {
+        private const val PREFS_NAME = "CallScreenerPrefs"
+        private const val KEY_CALL_LOG = "screened_calls_log"
+    }
+
+    private val prefs: SharedPreferences by lazy {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
 
     fun saveScreenedCall(
-        context: Context,
         phoneNumber: String,
         wasBlocked: Boolean
     ) {
         try {
-            val prefs = getPrefs(context)
             val existingLog = prefs.getString(KEY_CALL_LOG, "[]")
-            val logArray = JSONArray(existingLog)
-
-            val callEntry = JSONObject().apply {
-                put("phoneNumber", phoneNumber)
-                put("timestamp", System.currentTimeMillis())
-                put("wasBlocked", wasBlocked)
+            val logArray = if (existingLog.isNullOrEmpty()) {
+                mutableListOf()
+            } else {
+                Json.decodeFromString<List<CallEntry>>(existingLog).toMutableList()
             }
 
-            logArray.put(callEntry)
+            val callEntry = CallEntry(
+                phoneNumber = phoneNumber,
+                timestamp = System.currentTimeMillis(),
+                wasBlocked = wasBlocked
+            )
 
+            logArray.add(callEntry)
             // Keep only last 100 entries
-            val trimmedArray = if (logArray.length() > 100) {
-                JSONArray().apply {
-                    for (i in (logArray.length() - 100) until logArray.length()) {
-                        put(logArray.get(i))
-                    }
-                }
+            val trimmedArray = if (logArray.size > 100) {
+                logArray.takeLast(100)
             } else {
                 logArray
             }
 
-            prefs.edit().putString(KEY_CALL_LOG, trimmedArray.toString()).apply()
+            val jsonString = Json.encodeToString(trimmedArray)
+            prefs.edit { putString(KEY_CALL_LOG, jsonString) }
+
             Log.d(CONST.APP_TAG, "Saved screened call: $phoneNumber, blocked: $wasBlocked")
         } catch (e: Exception) {
             Log.e(CONST.APP_TAG, "Error saving call log", e)
         }
     }
 
-    fun getScreenedCalls(context: Context): List<ScreenedCall> {
-        val calls = mutableListOf<ScreenedCall>()
-
-        try {
-            val prefs = getPrefs(context)
+    fun getScreenedCalls(): List<ScreenedCall> {
+        return try {
             val logString = prefs.getString(KEY_CALL_LOG, "[]")
-            val logArray = JSONArray(logString)
-
-            for (i in 0 until logArray.length()) {
-                val callObj = logArray.getJSONObject(i)
-                calls.add(
-                    ScreenedCall(
-                        phoneNumber = callObj.getString("phoneNumber"),
-                        timestamp = callObj.getLong("timestamp"),
-                        wasBlocked = callObj.getBoolean("wasBlocked")
-                    )
-                )
+            if (logString.isNullOrEmpty()) {
+                emptyList()
+            } else {
+                val logArray = Json.decodeFromString<List<CallEntry>>(logString)
+                logArray.map {
+                    ScreenedCall(it.phoneNumber, it.timestamp, it.wasBlocked)
+                }.sortedByDescending { it.timestamp }
             }
         } catch (e: Exception) {
             Log.e(CONST.APP_TAG, "Error reading call log", e)
+            emptyList()
         }
-
-        return calls.sortedByDescending { it.timestamp }
     }
 
-    fun clearCallLog(context: Context) {
-        val prefs = getPrefs(context)
-        prefs.edit().putString(KEY_CALL_LOG, "[]").apply()
+    fun observeScreenedCalls(): Flow<List<ScreenedCall>> = callbackFlow {
+        trySend(getScreenedCalls())
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == KEY_CALL_LOG) {
+                trySend(getScreenedCalls())
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        awaitClose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
     }
 
-    private fun getPrefs(context: Context) = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    fun clearCallLog() {
+        prefs.edit { putString(KEY_CALL_LOG, "[]") }
+    }
 }

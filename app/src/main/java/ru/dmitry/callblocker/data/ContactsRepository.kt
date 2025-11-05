@@ -5,9 +5,19 @@ import android.provider.ContactsContract
 import android.util.Log
 import ru.dmitry.callblocker.core.CONST
 
-object ContactsRepository {
-    // TODO добавить инжект и получение контактов.
-    fun isNumberInContacts(context: Context, phoneNumber: String): Boolean {
+class ContactsRepository(
+    private val context: Context
+) {
+    
+    fun isNumberInContacts(phoneNumber: String): Boolean {
+        return queryContact(phoneNumber) != null
+    }
+
+    fun getContactName(phoneNumber: String): String? {
+        return queryContact(phoneNumber)
+    }
+    
+    private fun queryContact(phoneNumber: String): String? {
         val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI
         val lookupUri = uri.buildUpon().appendPath(phoneNumber).build()
 
@@ -26,38 +36,11 @@ object ContactsRepository {
                         cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)
                     )
                     Log.d(CONST.APP_TAG, "Found contact: $name for number: $phoneNumber")
-                    return true
+                    return name
                 }
             }
         } catch (e: Exception) {
             Log.e(CONST.APP_TAG, "Error checking contacts", e)
-        }
-
-        return false
-    }
-
-    fun getContactName(context: Context, phoneNumber: String): String? {
-        val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI
-        val lookupUri = uri.buildUpon().appendPath(phoneNumber).build()
-
-        val projection = arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME)
-
-        try {
-            context.contentResolver.query(
-                lookupUri,
-                projection,
-                null,
-                null,
-                null
-            )?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(
-                        cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(CONST.APP_TAG, "Error getting contact name", e)
         }
 
         return null

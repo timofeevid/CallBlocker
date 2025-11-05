@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -14,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "ru.dmitry.callblocker"
-        minSdk = 27
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -58,6 +59,8 @@ dependencies {
     
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    
+    implementation(libs.kotlinx.serialization.json)
     
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

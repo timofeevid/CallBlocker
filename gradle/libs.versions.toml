@@ -7,7 +7,7 @@ activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 accompanist = "0.32.0"
 hilt = "2.56"
-kotlinxSerialization = "1.9.0"
+kotlinxSerialization = "1.6.3"
 ksp = "2.0.21-1.0.26"
 
 [libraries]

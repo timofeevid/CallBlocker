@@ -8,16 +8,6 @@
     android:background="@drawable/widget_background">
 
     <TextView
-        android:id="@+id/widget_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Call Screener"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
         android:id="@+id/widget_service_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

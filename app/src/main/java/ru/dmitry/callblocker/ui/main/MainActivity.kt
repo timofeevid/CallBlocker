@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
@@ -18,18 +17,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,39 +33,38 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
+import dagger.hilt.android.AndroidEntryPoint
+import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 import ru.dmitry.callblocker.ui.theme.CallBlockerTheme
-import ru.dmitry.callblocker.R
+import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CallBlockerTheme() {
+            CallBlockerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -102,17 +97,14 @@ fun CallScreenerApp(viewModel: MainScreenViewModel = viewModel()) {
         }
 
     LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val roleManager =
-                getSystemService(context, RoleManager::class.java) ?: return@LaunchedEffect
-            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-            callScreen.launch(intent)
-        }
+        val roleManager =
+            getSystemService(context, RoleManager::class.java) ?: return@LaunchedEffect
+        val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+        callScreen.launch(intent)
     }
 
     LaunchedEffect(Unit) {
-        viewModel.loadCallLog(context)
-        // Update widget when app opens
+        viewModel.loadCallLog()
         CallScreenerWidgetProvider.Companion.updateAllWidgets(context)
     }
 
@@ -120,177 +112,39 @@ fun CallScreenerApp(viewModel: MainScreenViewModel = viewModel()) {
         viewModel.updatePermissionStatus(permissionState.allPermissionsGranted)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.call_screener_title)) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Service Status Widget
-            item {
-                ServiceStatusWidget(
-                    isActive = uiState.hasScreeningRole,
-                    lastCallScreenedTime = uiState.lastCallScreenedTime,
-                    lastBlockedCall = uiState.lastBlockedCall
-                )
-            }
-
-            // Setup Status Card
-            item {
-                SetupStatusCard(
-                    hasPermissions = uiState.hasPermissions,
-                    hasScreeningRole = uiState.hasScreeningRole,
-                    onRequestPermissions = { permissionState.launchMultiplePermissionRequest() },
-                    onSetupScreening = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-                            context.startActivity(intent)
-                        }
-                    }
-                )
-            }
-
-            // Call Blocking Card
-            item {
-                CallBlockingCard(
-                    isEnabled = uiState.blockUnknownCalls,
-                    canToggle = uiState.hasPermissions && uiState.hasScreeningRole,
-                    onToggle = { viewModel.toggleBlockUnknownCalls(context, it) }
-                )
-            }
-
-            // Call Log Card
-            item {
-                CallLogCard(
-                    calls = uiState.screenedCalls,
-                    onClearLog = { viewModel.clearCallLog(context) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ServiceStatusWidget(
-    isActive: Boolean,
-    lastCallScreenedTime: Long,
-    lastBlockedCall: ScreenedCall?
-) {
-    val context = LocalContext.current
-    val currentTime = remember { System.currentTimeMillis() }
-    val timeSinceLastCall = if (lastCallScreenedTime > 0) {
-        getTimeAgoString(currentTime - lastCallScreenedTime, context)
-    } else {
-        stringResource(R.string.never)
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isActive) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.errorContainer
-            }
-        )
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isActive) Icons.Default.CheckCircle else Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = if (isActive) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onErrorContainer
-                        }
-                    )
-                    Text(
-                        text = if (isActive) stringResource(R.string.service_active) else stringResource(R.string.service_inactive),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = if (isActive) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onErrorContainer
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = stringResource(R.string.last_call_screened, timeSinceLastCall),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isActive) {
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.onErrorContainer
-                    }
-                )
-
-                lastBlockedCall?.let { call ->
-                    val contactName = ContactsRepository.getContactName(context, call.phoneNumber)
-                    Text(
-                        text = stringResource(R.string.last_blocked_call, contactName ?: call.phoneNumber),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (isActive) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onErrorContainer
-                        }
-                    )
-                }
-            }
-
-            Icon(
-                imageVector = Icons.Default.Phone,
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
-                tint = if (isActive) {
-                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
-                } else {
-                    MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.3f)
+        item {
+            SetupStatusCard(
+                hasPermissions = uiState.hasPermissions,
+                hasScreeningRole = uiState.hasScreeningRole,
+                onRequestPermissions = { permissionState.launchMultiplePermissionRequest() },
+                onSetupScreening = {
+                    val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
+                    context.startActivity(intent)
                 }
             )
         }
-    }
-}
 
-fun getTimeAgoString(millisAgo: Long, context: android.content.Context): String {
-    val seconds = millisAgo / 1000
-    val minutes = seconds / 60
-    val hours = minutes / 60
-    val days = hours / 24
+        item {
+            CallBlockingCard(
+                isEnabled = uiState.blockUnknownCalls,
+                canToggle = uiState.hasPermissions && uiState.hasScreeningRole,
+                onToggle = { viewModel.toggleBlockUnknownCalls(it) }
+            )
+        }
 
-    return when {
-        days > 0 -> context.getString(R.string.days_ago, days, if (days > 1) "s" else "")
-        hours > 0 -> context.getString(R.string.hours_ago, hours, if (hours > 1) "s" else "")
-        minutes > 0 -> context.getString(R.string.minutes_ago, minutes, if (minutes > 1) "s" else "")
-        seconds > 0 -> context.getString(R.string.seconds_ago, seconds, if (seconds > 1) "s" else "")
-        else -> context.getString(R.string.just_now)
+        item {
+            CallLogCard(
+                calls = uiState.screenedCalls,
+                onClearLog = { viewModel.clearCallLog() }
+            )
+        }
     }
 }
 
@@ -360,21 +214,11 @@ fun StatusRow(label: String, isGranted: Boolean) {
             text = label,
             style = MaterialTheme.typography.bodyLarge
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = if (isGranted) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                contentDescription = null,
-                tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-            )
-            Text(
-                text = if (isGranted) stringResource(R.string.granted_status) else stringResource(R.string.not_granted_status),
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-            )
-        }
+        Icon(
+            imageVector = if (isGranted) Icons.Default.CheckCircle else Icons.Default.Cancel,
+            contentDescription = null,
+            tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+        )
     }
 }
 
@@ -404,7 +248,7 @@ fun CallBlockingCard(
             ) {
                 Text(
                     text = stringResource(R.string.block_unknown_numbers_label),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodySmall
                 )
                 Switch(
                     checked = isEnabled,
@@ -472,7 +316,7 @@ fun CallLogCard(
 fun CallLogItem(call: ScreenedCall) {
     val context = LocalContext.current
     val contactName = remember(call.phoneNumber) {
-        ContactsRepository.getContactName(context, call.phoneNumber)
+        ContactsRepository(context).getContactName(call.phoneNumber)
     }
 
     Row(
