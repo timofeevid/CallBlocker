@@ -1,8 +1,8 @@
-package ru.dmitry.callblocker.ui.main
+package ru.dmitry.callblocker.ui.home
 
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 
-data class MainScreenUiState(
+data class HomeScreenUiState(
     val hasPermissions: Boolean = false,
     val hasScreeningRole: Boolean = false,
     val blockUnknownCalls: Boolean = false,

@@ -30,6 +30,14 @@
     <string name="seconds_ago">%1$d second%2$s ago</string>
     <string name="just_now">Just now</string>
     
+    <!-- Navigation Strings -->
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
+    
+    <!-- Settings Screen Strings -->
+    <string name="settings_screen_title">Settings Screen</string>
+    <string name="settings_screen_description">App settings will be here</string>
+    
     <!-- Widget Strings -->
     <string name="widget_service_active">Service: Active ✓</string>
     <string name="widget_service_inactive">Service: Inactive ✗</string>

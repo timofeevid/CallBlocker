@@ -1,26 +1,12 @@
-package ru.dmitry.callblocker.ui.main
+package ru.dmitry.callblocker.ui.home
 
-import android.Manifest
-import android.app.Activity
-import android.app.role.RoleManager
-import android.content.Intent
-import android.os.Bundle
-import android.provider.Settings
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
@@ -29,7 +15,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,115 +23,15 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.domain.model.ScreenedCall
-import ru.dmitry.callblocker.ui.theme.CallBlockerTheme
-import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
-
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            CallBlockerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    CallScreenerApp()
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun CallScreenerApp(viewModel: MainScreenViewModel = viewModel()) {
-    val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsState()
-
-    val permissionState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_CALL_LOG
-        )
-    )
-    val callScreen =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                viewModel.hasScreeningRole(true)
-            }
-        }
-
-    LaunchedEffect(Unit) {
-        val roleManager =
-            getSystemService(context, RoleManager::class.java) ?: return@LaunchedEffect
-        val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-        callScreen.launch(intent)
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadCallLog()
-        CallScreenerWidgetProvider.Companion.updateAllWidgets(context)
-    }
-
-    LaunchedEffect(permissionState.allPermissionsGranted) {
-        viewModel.updatePermissionStatus(permissionState.allPermissionsGranted)
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            SetupStatusCard(
-                hasPermissions = uiState.hasPermissions,
-                hasScreeningRole = uiState.hasScreeningRole,
-                onRequestPermissions = { permissionState.launchMultiplePermissionRequest() },
-                onSetupScreening = {
-                    val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-                    context.startActivity(intent)
-                }
-            )
-        }
-
-        item {
-            CallBlockingCard(
-                isEnabled = uiState.blockUnknownCalls,
-                canToggle = uiState.hasPermissions && uiState.hasScreeningRole,
-                onToggle = { viewModel.toggleBlockUnknownCalls(it) }
-            )
-        }
-
-        item {
-            CallLogCard(
-                calls = uiState.screenedCalls,
-                onClearLog = { viewModel.clearCallLog() }
-            )
-        }
-    }
-}
 
 @Composable
 fun SetupStatusCard(

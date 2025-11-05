@@ -12,7 +12,7 @@ import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.data.AppConfigurationRepository
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
-import ru.dmitry.callblocker.ui.main.MainActivity
+import ru.dmitry.callblocker.ui.MainActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

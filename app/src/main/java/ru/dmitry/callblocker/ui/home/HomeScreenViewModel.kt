@@ -1,4 +1,4 @@
-package ru.dmitry.callblocker.ui.main
+package ru.dmitry.callblocker.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,13 +14,13 @@ import ru.dmitry.callblocker.data.CallHistoryRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class MainScreenViewModel @Inject constructor(
+class HomeScreenViewModel @Inject constructor(
     private val appConfigurationRepository: AppConfigurationRepository,
     private val callHistoryRepository: CallHistoryRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MainScreenUiState())
-    val uiState: StateFlow<MainScreenUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(HomeScreenUiState())
+    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     init {
         observeCallLog()

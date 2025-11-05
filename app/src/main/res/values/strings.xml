@@ -30,6 +30,14 @@
     <string name="seconds_ago">%1$d секунд%2$s назад</string>
     <string name="just_now">Только что</string>
     
+    <!-- Navigation Strings -->
+    <string name="home">Главная</string>
+    <string name="settings">Настройки</string>
+    
+    <!-- Settings Screen Strings -->
+    <string name="settings_screen_title">Экран настроек</string>
+    <string name="settings_screen_description">Здесь будут настройки приложения</string>
+    
     <!-- Widget Strings -->
     <string name="widget_service_active">Служба: Активна ✓</string>
     <string name="widget_service_inactive">Служба: Неактивна ✗</string>

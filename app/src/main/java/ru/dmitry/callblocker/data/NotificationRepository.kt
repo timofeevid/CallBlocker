@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import ru.dmitry.callblocker.domain.model.NotificationData
-import ru.dmitry.callblocker.ui.main.MainActivity
+import ru.dmitry.callblocker.ui.MainActivity
 
 class NotificationRepository(
     private val context: Context
