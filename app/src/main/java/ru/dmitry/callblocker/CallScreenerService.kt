@@ -1,4 +1,5 @@
 package ru.dmitry.callblocker
+
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
@@ -11,6 +12,9 @@ class CallScreenerService : CallScreeningService() {
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
+        // Mark service as active - this proves the service is working
+        PreferencesHelper.markServiceActive(this)
+
         // Get the incoming phone number
         val phoneNumber = callDetails.handle?.schemeSpecificPart
 
@@ -45,6 +49,9 @@ class CallScreenerService : CallScreeningService() {
 
             // Save to blocked/screened calls log
             CallLogHelper.saveScreenedCall(this, phoneNumber, shouldBlock)
+
+            // Update widget
+            CallScreenerWidgetProvider.updateAllWidgets(this)
         }
     }
 

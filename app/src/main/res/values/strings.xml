@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CallBlocker</string>
+        <string name="widget_description">Shows call screening status and last blocked call</string>
 </resources>
