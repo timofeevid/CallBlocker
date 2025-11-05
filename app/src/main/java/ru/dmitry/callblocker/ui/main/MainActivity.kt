@@ -1,5 +1,6 @@
-package ru.dmitry.callblocker
+package ru.dmitry.callblocker.ui.main
 
+import android.Manifest
 import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Intent
@@ -45,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -56,7 +58,11 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
+import ru.dmitry.callblocker.data.ContactsRepository
+import ru.dmitry.callblocker.domain.model.ScreenedCall
 import ru.dmitry.callblocker.ui.theme.CallBlockerTheme
+import ru.dmitry.callblocker.R
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,15 +83,15 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CallScreenerApp(viewModel: CallScreenerViewModel = viewModel()) {
+fun CallScreenerApp(viewModel: MainScreenViewModel = viewModel()) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
     val permissionState = rememberMultiplePermissionsState(
         permissions = listOf(
-            android.Manifest.permission.READ_PHONE_STATE,
-            android.Manifest.permission.READ_CONTACTS,
-            android.Manifest.permission.READ_CALL_LOG
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_CALL_LOG
         )
     )
     val callScreen =
@@ -107,7 +113,7 @@ fun CallScreenerApp(viewModel: CallScreenerViewModel = viewModel()) {
     LaunchedEffect(Unit) {
         viewModel.loadCallLog(context)
         // Update widget when app opens
-        CallScreenerWidgetProvider.updateAllWidgets(context)
+        CallScreenerWidgetProvider.Companion.updateAllWidgets(context)
     }
 
     LaunchedEffect(permissionState.allPermissionsGranted) {
@@ -117,7 +123,7 @@ fun CallScreenerApp(viewModel: CallScreenerViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Call Screener") },
+                title = { Text(stringResource(R.string.call_screener_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -185,9 +191,9 @@ fun ServiceStatusWidget(
     val context = LocalContext.current
     val currentTime = remember { System.currentTimeMillis() }
     val timeSinceLastCall = if (lastCallScreenedTime > 0) {
-        getTimeAgoString(currentTime - lastCallScreenedTime)
+        getTimeAgoString(currentTime - lastCallScreenedTime, context)
     } else {
-        "Never"
+        stringResource(R.string.never)
     }
 
     Card(
@@ -223,7 +229,7 @@ fun ServiceStatusWidget(
                         }
                     )
                     Text(
-                        text = if (isActive) "Service Active" else "Service Inactive",
+                        text = if (isActive) stringResource(R.string.service_active) else stringResource(R.string.service_inactive),
                         style = MaterialTheme.typography.titleMedium,
                         color = if (isActive) {
                             MaterialTheme.colorScheme.onPrimaryContainer
@@ -236,7 +242,7 @@ fun ServiceStatusWidget(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Last call screened: $timeSinceLastCall",
+                    text = stringResource(R.string.last_call_screened, timeSinceLastCall),
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isActive) {
                         MaterialTheme.colorScheme.onPrimaryContainer
@@ -246,9 +252,9 @@ fun ServiceStatusWidget(
                 )
 
                 lastBlockedCall?.let { call ->
-                    val contactName = ContactsHelper.getContactName(context, call.phoneNumber)
+                    val contactName = ContactsRepository.getContactName(context, call.phoneNumber)
                     Text(
-                        text = "Last blocked: ${contactName ?: call.phoneNumber}",
+                        text = stringResource(R.string.last_blocked_call, contactName ?: call.phoneNumber),
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isActive) {
                             MaterialTheme.colorScheme.onPrimaryContainer
@@ -273,18 +279,18 @@ fun ServiceStatusWidget(
     }
 }
 
-fun getTimeAgoString(millisAgo: Long): String {
+fun getTimeAgoString(millisAgo: Long, context: android.content.Context): String {
     val seconds = millisAgo / 1000
     val minutes = seconds / 60
     val hours = minutes / 60
     val days = hours / 24
 
     return when {
-        days > 0 -> "$days day${if (days > 1) "s" else ""} ago"
-        hours > 0 -> "$hours hour${if (hours > 1) "s" else ""} ago"
-        minutes > 0 -> "$minutes minute${if (minutes > 1) "s" else ""} ago"
-        seconds > 0 -> "$seconds second${if (seconds > 1) "s" else ""} ago"
-        else -> "Just now"
+        days > 0 -> context.getString(R.string.days_ago, days, if (days > 1) "s" else "")
+        hours > 0 -> context.getString(R.string.hours_ago, hours, if (hours > 1) "s" else "")
+        minutes > 0 -> context.getString(R.string.minutes_ago, minutes, if (minutes > 1) "s" else "")
+        seconds > 0 -> context.getString(R.string.seconds_ago, seconds, if (seconds > 1) "s" else "")
+        else -> context.getString(R.string.just_now)
     }
 }
 
@@ -304,17 +310,17 @@ fun SetupStatusCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Setup Status",
+                text = stringResource(R.string.setup_status_title),
                 style = MaterialTheme.typography.titleLarge
             )
 
             StatusRow(
-                label = "Permissions",
+                label = stringResource(R.string.permissions_label),
                 isGranted = hasPermissions
             )
 
             StatusRow(
-                label = "Call Screening",
+                label = stringResource(R.string.call_screening_label),
                 isGranted = hasScreeningRole
             )
 
@@ -325,7 +331,7 @@ fun SetupStatusCard(
                 ) {
                     Icon(Icons.Default.Lock, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Request Permissions")
+                    Text(stringResource(R.string.request_permissions_button))
                 }
             }
 
@@ -336,7 +342,7 @@ fun SetupStatusCard(
                 ) {
                     Icon(Icons.Default.Settings, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Enable Call Screening")
+                    Text(stringResource(R.string.enable_call_screening_button))
                 }
             }
         }
@@ -364,7 +370,7 @@ fun StatusRow(label: String, isGranted: Boolean) {
                 tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             )
             Text(
-                text = if (isGranted) "Granted" else "Not Granted",
+                text = if (isGranted) stringResource(R.string.granted_status) else stringResource(R.string.not_granted_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             )
@@ -387,7 +393,7 @@ fun CallBlockingCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Call Blocking",
+                text = stringResource(R.string.call_blocking_title),
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -397,7 +403,7 @@ fun CallBlockingCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Block Unknown Numbers",
+                    text = stringResource(R.string.block_unknown_numbers_label),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Switch(
@@ -408,7 +414,7 @@ fun CallBlockingCard(
             }
 
             Text(
-                text = "When enabled, calls from numbers not in your contacts will be automatically rejected.",
+                text = stringResource(R.string.block_unknown_numbers_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -435,17 +441,17 @@ fun CallLogCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Screened Calls",
+                    text = stringResource(R.string.screened_calls_title),
                     style = MaterialTheme.typography.titleLarge
                 )
                 TextButton(onClick = onClearLog) {
-                    Text("Clear")
+                    Text(stringResource(R.string.clear_button))
                 }
             }
 
             if (calls.isEmpty()) {
                 Text(
-                    text = "No screened calls yet",
+                    text = stringResource(R.string.no_screened_calls),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 16.dp)
@@ -466,7 +472,7 @@ fun CallLogCard(
 fun CallLogItem(call: ScreenedCall) {
     val context = LocalContext.current
     val contactName = remember(call.phoneNumber) {
-        ContactsHelper.getContactName(context, call.phoneNumber)
+        ContactsRepository.getContactName(context, call.phoneNumber)
     }
 
     Row(
@@ -497,7 +503,7 @@ fun CallLogItem(call: ScreenedCall) {
             shape = MaterialTheme.shapes.small
         ) {
             Text(
-                text = if (call.wasBlocked) "BLOCKED" else "SCREENED",
+                text = if (call.wasBlocked) stringResource(R.string.blocked_status) else stringResource(R.string.screened_status),
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 color = if (call.wasBlocked) {

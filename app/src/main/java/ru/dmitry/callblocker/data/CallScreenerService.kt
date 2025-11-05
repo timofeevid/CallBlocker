@@ -1,24 +1,24 @@
-package ru.dmitry.callblocker
+package ru.dmitry.callblocker.data
 
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.util.Log
+import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
+import ru.dmitry.callblocker.data.AppConfigurationRepository
+import ru.dmitry.callblocker.core.CONST
 
 class CallScreenerService : CallScreeningService() {
-
-    companion object {
-        private const val TAG = "CallScreenerService"
-    }
+    // TODO передавать инжектом PreferencesHelper CallHistoryRepository CallScreenerWidgetProvider NotificationHelper
 
     override fun onScreenCall(callDetails: Call.Details) {
         // Mark service as active - this proves the service is working
-        PreferencesHelper.markServiceActive(this)
+        AppConfigurationRepository.markServiceActive(this)
 
         // Get the incoming phone number
         val phoneNumber = callDetails.handle?.schemeSpecificPart
 
-        Log.d(TAG, "Screening call from: $phoneNumber")
+        Log.d(CONST.APP_TAG, "Screening call from: $phoneNumber")
 
         if (phoneNumber == null) {
             // If we can't get the number, allow the call
@@ -27,31 +27,31 @@ class CallScreenerService : CallScreeningService() {
         }
 
         // Check if number is in contacts
-        val isKnownNumber = ContactsHelper.isNumberInContacts(this, phoneNumber)
+        val isKnownNumber = ContactsRepository.isNumberInContacts(this, phoneNumber)
 
         if (isKnownNumber) {
             // Allow calls from known contacts
-            Log.d(TAG, "Known contact - allowing call")
+            Log.d(CONST.APP_TAG, "Known contact - allowing call")
             allowCall(callDetails)
         } else {
             // Check if user wants to block unknown numbers
-            val shouldBlock = PreferencesHelper.shouldBlockUnknownNumbers(this)
+            val shouldBlock = AppConfigurationRepository.shouldBlockUnknownNumbers(this)
 
             if (shouldBlock) {
                 // Block unknown calls
-                Log.d(TAG, "Unknown number - blocking call")
+                Log.d(CONST.APP_TAG, "Unknown number - blocking call")
                 blockCall(callDetails, phoneNumber)
             } else {
                 // Just log but allow the call
-                Log.d(TAG, "Unknown number - allowing call (blocking disabled)")
+                Log.d(CONST.APP_TAG, "Unknown number - allowing call (blocking disabled)")
                 allowCall(callDetails)
             }
 
             // Save to blocked/screened calls log
-            CallLogHelper.saveScreenedCall(this, phoneNumber, shouldBlock)
+            CallHistoryRepository.saveScreenedCall(this, phoneNumber, shouldBlock)
 
             // Update widget
-            CallScreenerWidgetProvider.updateAllWidgets(this)
+            CallScreenerWidgetProvider.Companion.updateAllWidgets(this)
         }
     }
 
@@ -78,7 +78,7 @@ class CallScreenerService : CallScreeningService() {
             respondToCall(callDetails, response)
 
             // Show notification about blocked call
-            NotificationHelper.showBlockedCallNotification(this, phoneNumber)
+            NotificationRepository.showBlockedCallNotification(this, phoneNumber)
         }
     }
 }

@@ -1,15 +1,12 @@
-package ru.dmitry.callblocker
-
+package ru.dmitry.callblocker.data
 
 import android.content.Context
 import android.provider.ContactsContract
-import android.telephony.PhoneNumberUtils
 import android.util.Log
+import ru.dmitry.callblocker.core.CONST
 
-object ContactsHelper {
-
-    private const val TAG = "ContactsHelper"
-
+object ContactsRepository {
+    // TODO добавить инжект и получение контактов.
     fun isNumberInContacts(context: Context, phoneNumber: String): Boolean {
         val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI
         val lookupUri = uri.buildUpon().appendPath(phoneNumber).build()
@@ -28,12 +25,12 @@ object ContactsHelper {
                     val name = cursor.getString(
                         cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)
                     )
-                    Log.d(TAG, "Found contact: $name for number: $phoneNumber")
+                    Log.d(CONST.APP_TAG, "Found contact: $name for number: $phoneNumber")
                     return true
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error checking contacts", e)
+            Log.e(CONST.APP_TAG, "Error checking contacts", e)
         }
 
         return false
@@ -60,7 +57,7 @@ object ContactsHelper {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting contact name", e)
+            Log.e(CONST.APP_TAG, "Error getting contact name", e)
         }
 
         return null

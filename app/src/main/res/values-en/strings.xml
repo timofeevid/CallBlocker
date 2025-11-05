@@ -37,7 +37,5 @@
     <string name="widget_blocking_off">Blocking: OFF</string>
     <string name="widget_last_screened">Last screened: %1$s</string>
     <string name="widget_no_calls">No calls screened yet</string>
-    <string name="widget_last_blocked">Last blocked:
-%1$s
-%2$s</string>
+    <string name="widget_last_blocked">Last blocked:\n%1$s\n%2$s</string>
 </resources>

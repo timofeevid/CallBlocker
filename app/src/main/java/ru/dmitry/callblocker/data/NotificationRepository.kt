@@ -1,14 +1,15 @@
-package ru.dmitry.callblocker
+package ru.dmitry.callblocker.data
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.app.NotificationCompat
+import ru.dmitry.callblocker.ui.main.MainActivity
 
-object NotificationHelper {
+object NotificationRepository {
 
     private const val CHANNEL_ID = "call_screener_channel"
     private const val CHANNEL_NAME = "Call Screening"
@@ -39,7 +40,7 @@ object NotificationHelper {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_call)
+            .setSmallIcon(R.drawable.ic_menu_call)
             .setContentTitle("Call Blocked")
             .setContentText("Blocked call from: $phoneNumber")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

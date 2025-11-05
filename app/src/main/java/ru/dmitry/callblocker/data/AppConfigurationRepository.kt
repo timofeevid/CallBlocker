@@ -1,9 +1,9 @@
-package ru.dmitry.callblocker
+package ru.dmitry.callblocker.data
 
 import android.content.Context
 import android.content.SharedPreferences
 
-object PreferencesHelper {
+object AppConfigurationRepository {
 
     private const val PREFS_NAME = "CallScreenerPrefs"
     private const val KEY_BLOCK_UNKNOWN = "block_unknown_numbers"
