@@ -3,6 +3,12 @@ package ru.dmitry.callblocker.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import ru.dmitry.callblocker.domain.model.ConfigurationModel
 
 class AppConfigurationRepository(
     private val context: Context
@@ -12,33 +18,40 @@ class AppConfigurationRepository(
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    fun shouldBlockUnknownNumbers(): Boolean {
-        return preferences.getBoolean(KEY_BLOCK_UNKNOWN, false)
-    }
+    var configuration: ConfigurationModel
+        get() = preferences.getString(KEY_CONFIG, null)
+            ?.let { config -> Json.decodeFromString<ConfigurationModel>(config) }
+            ?: createDefaultConfig()
+        set(value) {
+            val jsonString = Json.encodeToString(value)
+            preferences.edit { putString(KEY_CONFIG, jsonString) }
+        }
 
-    fun setBlockUnknownNumbers(shouldBlock: Boolean) {
-        preferences.edit { putBoolean(KEY_BLOCK_UNKNOWN, shouldBlock) }
-    }
-
-    fun markServiceActive() {
-        preferences.edit {
-            putBoolean(KEY_SERVICE_ACTIVE, true)
-                .putLong(KEY_LAST_CALL_TIME, System.currentTimeMillis())
+    fun observe(): Flow<ConfigurationModel> = callbackFlow {
+        trySend(configuration)
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { value, key ->
+            if (key == KEY_CONFIG) {
+                trySend(configuration)
+            }
+        }
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+        awaitClose {
+            preferences.unregisterOnSharedPreferenceChangeListener(listener)
         }
     }
 
-    fun isServiceActive(): Boolean {
-        return preferences.getBoolean(KEY_SERVICE_ACTIVE, false)
-    }
-
-    fun getLastCallScreenedTime(): Long {
-        return preferences.getLong(KEY_LAST_CALL_TIME, 0L)
+    private fun createDefaultConfig(): ConfigurationModel {
+        return ConfigurationModel(
+            isScreenRoleGrand = false,
+            isBlockUnknownNumberEnable = false,
+            isPushEnable = true,
+            language = "en",
+            theme = "dark"
+        )
     }
 
     private companion object {
         const val PREFS_NAME = "CallScreenerPrefs"
-        const val KEY_BLOCK_UNKNOWN = "block_unknown_numbers"
-        const val KEY_SERVICE_ACTIVE = "service_active"
-        const val KEY_LAST_CALL_TIME = "last_call_screened_time"
+        const val KEY_CONFIG = "config"
     }
 }

@@ -37,6 +37,13 @@
     <!-- Settings Screen Strings -->
     <string name="settings_screen_title">Экран настроек</string>
     <string name="settings_screen_description">Здесь будут настройки приложения</string>
+    <string name="push_notifications_setting">Уведомления о блокировке</string>
+    <string name="language_setting">Язык</string>
+    <string name="theme_setting">Тема</string>
+    <string name="english_language_option">Английский</string>
+    <string name="russian_language_option">Русский</string>
+    <string name="light_theme_option">Светлая</string>
+    <string name="dark_theme_option">Темная</string>
     
     <!-- Widget Strings -->
     <string name="widget_service_active">Служба: Активна ✓</string>

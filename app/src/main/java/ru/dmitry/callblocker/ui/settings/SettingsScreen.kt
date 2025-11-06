@@ -1,35 +1,93 @@
 package ru.dmitry.callblocker.ui.settings
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.dmitry.callblocker.R
+import ru.dmitry.callblocker.domain.model.CallBlockerLanguage
+import ru.dmitry.callblocker.domain.model.CallBlockerTheme
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(16.dp)
     ) {
         Text(
             text = stringResource(R.string.settings_screen_title),
             style = MaterialTheme.typography.headlineMedium
         )
-        Text(
-            text = stringResource(R.string.settings_screen_description),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(top = 16.dp)
+        
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Push Notifications Setting
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.push_notifications_setting),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+            Switch(
+                checked = uiState.isPushEnable,
+                onCheckedChange = { viewModel.updatePushEnabled(it) }
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Language Setting
+        ExpandableSettingItem(
+            title = R.string.language_setting,
+            currentValue = uiState.language,
+            values = CallBlockerLanguage.entries.toTypedArray(),
+            getValueLabel = { language ->
+                when (language) {
+                    CallBlockerLanguage.ENG -> R.string.english_language_option
+                    CallBlockerLanguage.RU -> R.string.russian_language_option
+                }
+            },
+            onValueChanged = { viewModel.updateLanguage(it) },
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Theme Setting
+        ExpandableSettingItem(
+            title = R.string.theme_setting,
+            currentValue = uiState.theme,
+            values = CallBlockerTheme.entries.toTypedArray(),
+            getValueLabel = { theme ->
+                when (theme) {
+                    CallBlockerTheme.LIGHT -> R.string.light_theme_option
+                    CallBlockerTheme.DARK -> R.string.dark_theme_option
+                }
+            },
+            onValueChanged = { viewModel.updateTheme(it) },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

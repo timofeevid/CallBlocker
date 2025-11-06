@@ -9,9 +9,9 @@ import android.content.Intent
 import android.widget.RemoteViews
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.R
-import ru.dmitry.callblocker.data.AppConfigurationRepository
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
+import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.ui.MainActivity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -22,10 +22,18 @@ import javax.inject.Inject
 class CallScreenerWidgetProvider : AppWidgetProvider() {
 
     @Inject
-    lateinit var appConfigurationRepository: AppConfigurationRepository
+    lateinit var appConfigurationInteractor: AppConfigurationInteractor
 
     @Inject
     lateinit var callHistoryRepository: CallHistoryRepository
+
+    private var shouldBlockUnknownNumbers: Boolean
+        get() = appConfigurationInteractor.getConfiguration().isBlockUnknownNumberEnable
+        set(value) {
+            val currentConfig = appConfigurationInteractor.getConfiguration()
+            val newConfig = currentConfig.copy(isBlockUnknownNumberEnable = value)
+            appConfigurationInteractor.updateConfig(newConfig)
+        }
 
     override fun onUpdate(
         context: Context,
@@ -39,11 +47,11 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        
+
         when (intent.action) {
             ACTION_TOGGLE_BLOCK -> {
                 val blockStatus = intent.getBooleanExtra(EXTRA_BLOCK_STATUS, false)
-                appConfigurationRepository.setBlockUnknownNumbers(!blockStatus) // Toggle the status
+                shouldBlockUnknownNumbers = !blockStatus
                 updateAllWidgets(context)
             }
         }
@@ -54,7 +62,6 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int
     ) {
-        val blockEnabled = appConfigurationRepository.shouldBlockUnknownNumbers()
         val calls = callHistoryRepository.getScreenedCalls()
         val blockedCalls = calls.filter { it.wasBlocked }.take(3)
 
@@ -63,17 +70,19 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         // Set blocking status text and color
         views.setTextViewText(
             R.id.widget_block_toggle,
-            if (blockEnabled) context.getString(R.string.widget_blocking_on) else context.getString(R.string.widget_blocking_off)
+            if (shouldBlockUnknownNumbers) context.getString(R.string.widget_blocking_on) else context.getString(
+                R.string.widget_blocking_off
+            )
         )
         views.setTextColor(
             R.id.widget_block_toggle,
-            if (blockEnabled) 0xFF4CAF50.toInt() else 0xFFFF5252.toInt() // Green when enabled, red when disabled
+            if (shouldBlockUnknownNumbers) 0xFF4CAF50.toInt() else 0xFFFF5252.toInt() // Green when enabled, red when disabled
         )
-        
+
         // Set toggle click listener
         val toggleIntent = Intent(context, CallScreenerWidgetProvider::class.java).apply {
             action = ACTION_TOGGLE_BLOCK
-            putExtra(EXTRA_BLOCK_STATUS, blockEnabled)
+            putExtra(EXTRA_BLOCK_STATUS, shouldBlockUnknownNumbers)
         }
         val togglePendingIntent = PendingIntent.getBroadcast(
             context,
@@ -95,23 +104,23 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
 
         // Clear previous views
         views.removeAllViews(R.id.widget_blocked_calls_container)
-        
+
         // Add blocked calls
         if (blockedCalls.isNotEmpty()) {
             for (call in blockedCalls) {
                 val itemView = RemoteViews(context.packageName, R.layout.widget_blocked_call_item)
-                
+
                 // Get contact name or show phone number
                 val contactName = ContactsRepository(context).getContactName(call.phoneNumber)
                 val displayName = contactName ?: call.phoneNumber
-                
+
                 // Format time as HH:mm
                 val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
                 val timeText = timeFormat.format(Date(call.timestamp))
-                
+
                 itemView.setTextViewText(R.id.widget_blocked_number, displayName)
                 itemView.setTextViewText(R.id.widget_blocked_time, timeText)
-                
+
                 views.addView(R.id.widget_blocked_calls_container, itemView)
             }
         }
@@ -122,7 +131,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
     companion object {
         private const val ACTION_TOGGLE_BLOCK = "ru.dmitry.callblocker.TOGGLE_BLOCK"
         private const val EXTRA_BLOCK_STATUS = "extra_block_status"
-        
+
         fun updateAllWidgets(context: Context) {
             val intent = Intent(context, CallScreenerWidgetProvider::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE

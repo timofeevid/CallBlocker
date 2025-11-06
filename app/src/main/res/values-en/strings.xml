@@ -37,6 +37,13 @@
     <!-- Settings Screen Strings -->
     <string name="settings_screen_title">Settings Screen</string>
     <string name="settings_screen_description">App settings will be here</string>
+    <string name="push_notifications_setting">Block Notifications</string>
+    <string name="language_setting">Language</string>
+    <string name="theme_setting">Theme</string>
+    <string name="english_language_option">English</string>
+    <string name="russian_language_option">Russian</string>
+    <string name="light_theme_option">Light</string>
+    <string name="dark_theme_option">Dark</string>
     
     <!-- Widget Strings -->
     <string name="widget_service_active">Service: Active ✓</string>

@@ -10,7 +10,7 @@ import ru.dmitry.callblocker.data.AppConfigurationRepository
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.data.NotificationRepository
-import ru.dmitry.callblocker.domain.usecase.AppConfigInteractor
+import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.domain.usecase.GetContactNameUseCase
 import ru.dmitry.callblocker.domain.usecase.IsNumberInContactsUseCase
 import ru.dmitry.callblocker.domain.usecase.ShowBlockedCallNotificationUseCase
@@ -22,6 +22,11 @@ class MainModule {
     @Provides
     fun provideAppConfigurationRepository(@ApplicationContext context: Context): AppConfigurationRepository {
         return AppConfigurationRepository(context)
+    }
+
+    @Provides
+    fun provideAppConfigurationInteractor(appConfigurationRepository: AppConfigurationRepository): AppConfigurationInteractor {
+        return AppConfigurationInteractor(appConfigurationRepository)
     }
 
     @Provides
@@ -52,10 +57,5 @@ class MainModule {
     @Provides
     fun provideShowBlockedCallNotificationUseCase(notificationRepository: NotificationRepository): ShowBlockedCallNotificationUseCase {
         return ShowBlockedCallNotificationUseCase(notificationRepository)
-    }
-
-    @Provides
-    fun provideAppConfigInteractor(appConfigurationRepository: AppConfigurationRepository): AppConfigInteractor {
-        return AppConfigInteractor(appConfigurationRepository)
     }
 }

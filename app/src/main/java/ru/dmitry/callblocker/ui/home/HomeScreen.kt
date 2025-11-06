@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
 
-
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
     val context = LocalContext.current
@@ -58,7 +57,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
         callScreen.launch(intent)
         permissionRequest.invoke()
-        viewModel.loadCallLog()
+    }
+
+    LaunchedEffect(uiState.blockUnknownCalls, uiState.lastBlockedCall) {
         CallScreenerWidgetProvider.updateAllWidgets(context)
     }
 

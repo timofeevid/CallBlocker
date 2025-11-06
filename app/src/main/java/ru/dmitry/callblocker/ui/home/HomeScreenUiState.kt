@@ -7,6 +7,5 @@ data class HomeScreenUiState(
     val hasScreeningRole: Boolean = false,
     val blockUnknownCalls: Boolean = false,
     val screenedCalls: List<ScreenedCall> = emptyList(),
-    val lastCallScreenedTime: Long = 0L,
     val lastBlockedCall: ScreenedCall? = null
 )

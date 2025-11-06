@@ -4,76 +4,51 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import ru.dmitry.callblocker.data.AppConfigurationRepository
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import ru.dmitry.callblocker.data.CallHistoryRepository
+import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val appConfigurationRepository: AppConfigurationRepository,
+    private val appConfigurationInteractor: AppConfigurationInteractor,
     private val callHistoryRepository: CallHistoryRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeScreenUiState())
-    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
+    private val permissionStateFlow = MutableStateFlow(false)
+    val uiState: StateFlow<HomeScreenUiState> = combine(
+        flow = callHistoryRepository.observeScreenedCalls(),
+        flow2 = appConfigurationInteractor.observeConfiguration(),
+        flow3 = permissionStateFlow,
+        transform = { calls, config, isPermissionGrand ->
+            HomeScreenUiState(
+                hasPermissions = isPermissionGrand,
+                screenedCalls = calls,
+                hasScreeningRole = config.isScreenRoleGrand,
+                blockUnknownCalls = config.isBlockUnknownNumberEnable,
+                lastBlockedCall = calls.firstOrNull { it.wasBlocked }
+            )
+        }
+    ).stateIn(viewModelScope, SharingStarted.Eagerly, HomeScreenUiState())
 
-    init {
-        observeCallLog()
-    }
 
     fun updatePermissionStatus(hasPermissions: Boolean) {
-        _uiState.update { it.copy(hasPermissions = hasPermissions) }
+        permissionStateFlow.value = hasPermissions
     }
 
     fun hasScreeningRole(boolean: Boolean) {
-        _uiState.update { it.copy(hasScreeningRole = boolean) }
-    }
-
-    fun loadCallLog() {
-        viewModelScope.launch {
-            val calls = callHistoryRepository.getScreenedCalls()
-            val blockEnabled = appConfigurationRepository.shouldBlockUnknownNumbers()
-            val lastCallTime = appConfigurationRepository.getLastCallScreenedTime()
-            val lastBlocked = calls.firstOrNull { it.wasBlocked }
-
-            _uiState.update {
-                it.copy(
-                    screenedCalls = calls,
-                    blockUnknownCalls = blockEnabled,
-                    lastCallScreenedTime = lastCallTime,
-                    lastBlockedCall = lastBlocked
-                )
-            }
-        }
-    }
-
-    private fun observeCallLog() {
-        viewModelScope.launch {
-            callHistoryRepository.observeScreenedCalls().collectLatest { calls ->
-                val blockEnabled = appConfigurationRepository.shouldBlockUnknownNumbers()
-                val lastCallTime = appConfigurationRepository.getLastCallScreenedTime()
-                val lastBlocked = calls.firstOrNull { it.wasBlocked }
-
-                _uiState.update {
-                    it.copy(
-                        screenedCalls = calls,
-                        blockUnknownCalls = blockEnabled,
-                        lastCallScreenedTime = lastCallTime,
-                        lastBlockedCall = lastBlocked
-                    )
-                }
-            }
-        }
+        val currentConfig = appConfigurationInteractor.getConfiguration()
+        val newConfig = currentConfig.copy(isScreenRoleGrand = boolean)
+        appConfigurationInteractor.updateConfig(newConfig)
     }
 
     fun toggleBlockUnknownCalls(enabled: Boolean) {
-        appConfigurationRepository.setBlockUnknownNumbers(enabled)
-        _uiState.update { it.copy(blockUnknownCalls = enabled) }
+        val currentConfig = appConfigurationInteractor.getConfiguration()
+        val newConfig = currentConfig.copy(isBlockUnknownNumberEnable = enabled)
+        appConfigurationInteractor.updateConfig(newConfig)
     }
 
     fun clearCallLog() {
