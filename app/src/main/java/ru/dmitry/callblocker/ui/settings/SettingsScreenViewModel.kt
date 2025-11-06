@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import ru.dmitry.callblocker.domain.model.CallBlockerLanguage
-import ru.dmitry.callblocker.domain.model.CallBlockerTheme
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
+import ru.dmitry.callblocker.domain.model.Language
+import ru.dmitry.callblocker.domain.model.ThemeColor
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import javax.inject.Inject
 
@@ -30,14 +30,14 @@ class SettingsScreenViewModel @Inject constructor(
         appConfigurationInteractor.updateConfig(updatedConfig)
     }
 
-    fun updateLanguage(language: CallBlockerLanguage) {
+    fun updateLanguage(language: Language) {
         val updatedConfig = appConfigurationInteractor.getConfiguration().copy(
             language = language.langName
         )
         appConfigurationInteractor.updateConfig(updatedConfig)
     }
 
-    fun updateTheme(theme: CallBlockerTheme) {
+    fun updateTheme(theme: ThemeColor) {
         val updatedConfig = appConfigurationInteractor.getConfiguration().copy(
             theme = theme.themeName
         )
@@ -49,8 +49,8 @@ class SettingsScreenViewModel @Inject constructor(
             isScreenRoleGrand = isScreenRoleGrand,
             isBlockUnknownNumberEnable = isBlockUnknownNumberEnable,
             isPushEnable = isPushEnable,
-            language = CallBlockerLanguage.entries.find { it.langName == language } ?: CallBlockerLanguage.ENG,
-            theme = CallBlockerTheme.entries.find { it.themeName == theme } ?: CallBlockerTheme.DARK
+            language = Language.entries.find { it.langName == language } ?: Language.ENG,
+            theme = ThemeColor.entries.find { it.themeName == theme } ?: ThemeColor.DARK
         )
     }
 }

@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
+import ru.dmitry.callblocker.domain.model.Language
+import ru.dmitry.callblocker.domain.model.ThemeColor
 
 class AppConfigurationRepository(
     private val context: Context
@@ -45,8 +47,8 @@ class AppConfigurationRepository(
             isScreenRoleGrand = false,
             isBlockUnknownNumberEnable = false,
             isPushEnable = true,
-            language = "en",
-            theme = "dark"
+            language = Language.RU.langName,
+            theme = ThemeColor.DARK.themeName
         )
     }
 

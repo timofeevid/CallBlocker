@@ -16,11 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.dmitry.callblocker.R
-import ru.dmitry.callblocker.domain.model.CallBlockerLanguage
-import ru.dmitry.callblocker.domain.model.CallBlockerTheme
+import ru.dmitry.callblocker.domain.model.Language
+import ru.dmitry.callblocker.domain.model.ThemeColor
 
 @Composable
 fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
@@ -62,11 +62,11 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
         ExpandableSettingItem(
             title = R.string.language_setting,
             currentValue = uiState.language,
-            values = CallBlockerLanguage.entries.toTypedArray(),
+            values = Language.entries.toTypedArray(),
             getValueLabel = { language ->
                 when (language) {
-                    CallBlockerLanguage.ENG -> R.string.english_language_option
-                    CallBlockerLanguage.RU -> R.string.russian_language_option
+                    Language.ENG -> R.string.english_language_option
+                    Language.RU -> R.string.russian_language_option
                 }
             },
             onValueChanged = { viewModel.updateLanguage(it) },
@@ -79,11 +79,11 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
         ExpandableSettingItem(
             title = R.string.theme_setting,
             currentValue = uiState.theme,
-            values = CallBlockerTheme.entries.toTypedArray(),
+            values = ThemeColor.entries.toTypedArray(),
             getValueLabel = { theme ->
                 when (theme) {
-                    CallBlockerTheme.LIGHT -> R.string.light_theme_option
-                    CallBlockerTheme.DARK -> R.string.dark_theme_option
+                    ThemeColor.LIGHT -> R.string.light_theme_option
+                    ThemeColor.DARK -> R.string.dark_theme_option
                 }
             },
             onValueChanged = { viewModel.updateTheme(it) },
