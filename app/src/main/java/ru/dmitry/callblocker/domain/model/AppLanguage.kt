@@ -1,6 +1,6 @@
 package ru.dmitry.callblocker.domain.model
 
-enum class Language(val langName: String) {
+enum class AppLanguage(val code: String) {
     ENG("en"),
     RU("ru"),
 }

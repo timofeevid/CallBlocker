@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
-import ru.dmitry.callblocker.domain.model.Language
 import ru.dmitry.callblocker.domain.model.ThemeColor
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import javax.inject.Inject
@@ -30,9 +30,9 @@ class SettingsScreenViewModel @Inject constructor(
         appConfigurationInteractor.updateConfig(updatedConfig)
     }
 
-    fun updateLanguage(language: Language) {
+    fun updateLanguage(appLanguage: AppLanguage) {
         val updatedConfig = appConfigurationInteractor.getConfiguration().copy(
-            language = language.langName
+            language = appLanguage.code
         )
         appConfigurationInteractor.updateConfig(updatedConfig)
     }
@@ -49,7 +49,7 @@ class SettingsScreenViewModel @Inject constructor(
             isScreenRoleGrand = isScreenRoleGrand,
             isBlockUnknownNumberEnable = isBlockUnknownNumberEnable,
             isPushEnable = isPushEnable,
-            language = Language.entries.find { it.langName == language } ?: Language.ENG,
+            appLanguage = AppLanguage.entries.find { it.code == language } ?: AppLanguage.ENG,
             theme = ThemeColor.entries.find { it.themeName == theme } ?: ThemeColor.DARK
         )
     }

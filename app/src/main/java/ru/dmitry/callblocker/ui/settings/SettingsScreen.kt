@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.dmitry.callblocker.R
-import ru.dmitry.callblocker.domain.model.Language
+import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.ThemeColor
 
 @Composable
@@ -61,12 +61,12 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
         // Language Setting
         ExpandableSettingItem(
             title = R.string.language_setting,
-            currentValue = uiState.language,
-            values = Language.entries.toTypedArray(),
+            currentValue = uiState.appLanguage,
+            values = AppLanguage.entries.toTypedArray(),
             getValueLabel = { language ->
                 when (language) {
-                    Language.ENG -> R.string.english_language_option
-                    Language.RU -> R.string.russian_language_option
+                    AppLanguage.ENG -> R.string.english_language_option
+                    AppLanguage.RU -> R.string.russian_language_option
                 }
             },
             onValueChanged = { viewModel.updateLanguage(it) },
