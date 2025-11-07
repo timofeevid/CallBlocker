@@ -21,6 +21,12 @@ object LanguageUtils {
         return AppLanguage.entries.first { it.code == langCode }
     }
 
+    fun getLocale(): Locale {
+        val language = getCurrentLanguage().code
+        val locale = Locale.forLanguageTag(language)
+        return locale
+    }
+
     /**
      * Update the locale in the configuration
      */

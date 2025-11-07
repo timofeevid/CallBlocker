@@ -7,38 +7,46 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.domain.model.AppLanguage
-import ru.dmitry.callblocker.domain.model.ThemeColor
+import ru.dmitry.callblocker.domain.model.AppThemeColor
 
 @Composable
 fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+    var numberOfCallsText by remember(uiState.numberOfBlockCallToStore) {
+        mutableStateOf(uiState.numberOfBlockCallToStore.toString())
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         Text(
-            text = stringResource(R.string.settings_screen_title),
+            text = stringResource(id = R.string.settings_screen_title),
             style = MaterialTheme.typography.headlineMedium
         )
         
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Push Notifications Setting
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -46,7 +54,7 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.push_notifications_setting),
+                text = stringResource(id = R.string.push_notifications_setting),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
@@ -58,7 +66,24 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Language Setting
+        OutlinedTextField(
+            value = numberOfCallsText,
+            onValueChange = { newText ->
+                numberOfCallsText = newText
+                newText.toIntOrNull()?.let { number ->
+                    viewModel.updateNumberOfCallsToStore(number)
+                }
+            },
+            label = { Text(stringResource(id = R.string.number_of_calls_to_store_setting)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
         ExpandableSettingItem(
             title = R.string.language_setting,
             currentValue = uiState.appLanguage,
@@ -75,15 +100,14 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Theme Setting
         ExpandableSettingItem(
             title = R.string.theme_setting,
             currentValue = uiState.theme,
-            values = ThemeColor.entries.toTypedArray(),
+            values = AppThemeColor.entries.toTypedArray(),
             getValueLabel = { theme ->
                 when (theme) {
-                    ThemeColor.LIGHT -> R.string.light_theme_option
-                    ThemeColor.DARK -> R.string.dark_theme_option
+                    AppThemeColor.LIGHT -> R.string.light_theme_option
+                    AppThemeColor.DARK -> R.string.dark_theme_option
                 }
             },
             onValueChanged = { viewModel.updateTheme(it) },

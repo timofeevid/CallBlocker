@@ -14,13 +14,10 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        val language = LanguageUtils.getCurrentLanguage().code
-        val locale = Locale.forLanguageTag(language)
+        val locale = LanguageUtils.getLocale()
         Locale.setDefault(locale)
-
         val config = newBase.resources.configuration
         config.setLocale(locale)
-
         val context = newBase.createConfigurationContext(config)
         super.attachBaseContext(context)
     }

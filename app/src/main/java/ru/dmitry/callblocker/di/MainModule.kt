@@ -30,8 +30,14 @@ class MainModule {
     }
 
     @Provides
-    fun provideCallHistoryRepository(@ApplicationContext context: Context): CallHistoryRepository {
-        return CallHistoryRepository(context)
+    fun provideCallHistoryRepository(
+        @ApplicationContext context: Context,
+        appConfigurationRepository: AppConfigurationRepository
+    ): CallHistoryRepository {
+        return CallHistoryRepository(
+            context = context,
+            appConfigurationRepository = appConfigurationRepository
+        )
     }
 
     @Provides

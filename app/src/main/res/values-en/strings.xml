@@ -44,6 +44,7 @@
     <string name="russian_language_option">Russian</string>
     <string name="light_theme_option">Light</string>
     <string name="dark_theme_option">Dark</string>
+    <string name="number_of_calls_to_store_setting">Number of calls to store</string>
     
     <!-- Widget Strings -->
     <string name="widget_service_active">Service: Active ✓</string>

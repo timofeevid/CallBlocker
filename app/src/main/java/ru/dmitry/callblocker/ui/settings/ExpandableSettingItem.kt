@@ -41,13 +41,11 @@ fun <T : Enum<T>> ExpandableSettingItem(
     var expanded by remember { mutableStateOf(false) }
     
     Column(modifier = modifier) {
-        // Header row with current value and expand/collapse indicator
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .clickable { expanded = !expanded }
-                .padding(horizontal = 16.dp),
+                .clickable { expanded = !expanded },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -68,8 +66,7 @@ fun <T : Enum<T>> ExpandableSettingItem(
                 modifier = Modifier.rotate(if (expanded) 180f else 0f)
             )
         }
-        
-        // Expandable options
+
         AnimatedVisibility(
             visible = expanded,
             enter = expandVertically(),

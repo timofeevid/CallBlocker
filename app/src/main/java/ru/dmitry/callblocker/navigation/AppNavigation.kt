@@ -11,7 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ru.dmitry.callblocker.domain.model.ThemeColor
+import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.ui.home.HomeScreen
 import ru.dmitry.callblocker.ui.settings.SettingsScreen
 import ru.dmitry.callblocker.ui.settings.SettingsScreenViewModel
@@ -22,7 +22,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val settingsViewModel: SettingsScreenViewModel = hiltViewModel()
     val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
-    val isDarkTheme = settingsUiState.theme == ThemeColor.DARK
+    val isDarkTheme = settingsUiState.theme == AppThemeColor.DARK
 
     CallBlockerTheme(darkTheme = isDarkTheme) {
         Scaffold(

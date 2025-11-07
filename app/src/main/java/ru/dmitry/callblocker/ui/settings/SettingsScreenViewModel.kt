@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import ru.dmitry.callblocker.domain.model.AppLanguage
+import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
-import ru.dmitry.callblocker.domain.model.ThemeColor
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import javax.inject.Inject
 
@@ -37,9 +37,16 @@ class SettingsScreenViewModel @Inject constructor(
         appConfigurationInteractor.updateConfig(updatedConfig)
     }
 
-    fun updateTheme(theme: ThemeColor) {
+    fun updateTheme(theme: AppThemeColor) {
         val updatedConfig = appConfigurationInteractor.getConfiguration().copy(
             theme = theme.themeName
+        )
+        appConfigurationInteractor.updateConfig(updatedConfig)
+    }
+
+    fun updateNumberOfCallsToStore(number: Int) {
+        val updatedConfig = appConfigurationInteractor.getConfiguration().copy(
+            numberOfBlockCallToStore = number
         )
         appConfigurationInteractor.updateConfig(updatedConfig)
     }
@@ -49,8 +56,9 @@ class SettingsScreenViewModel @Inject constructor(
             isScreenRoleGrand = isScreenRoleGrand,
             isBlockUnknownNumberEnable = isBlockUnknownNumberEnable,
             isPushEnable = isPushEnable,
+            numberOfBlockCallToStore = numberOfBlockCallToStore,
             appLanguage = AppLanguage.entries.find { it.code == language } ?: AppLanguage.ENG,
-            theme = ThemeColor.entries.find { it.themeName == theme } ?: ThemeColor.DARK
+            theme = AppThemeColor.entries.find { it.themeName == theme } ?: AppThemeColor.DARK
         )
     }
 }

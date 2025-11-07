@@ -14,7 +14,8 @@ import ru.dmitry.callblocker.data.model.CallEntry
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 
 class CallHistoryRepository(
-    private val context: Context
+    private val context: Context,
+    private val appConfigurationRepository: AppConfigurationRepository,
 ) {
 
     companion object {
@@ -25,6 +26,9 @@ class CallHistoryRepository(
     private val prefs: SharedPreferences by lazy {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
+
+    private val numberCallsToStore: Int
+        get() = appConfigurationRepository.configuration.numberOfBlockCallToStore
 
     fun saveScreenedCall(
         phoneNumber: String,
@@ -45,9 +49,8 @@ class CallHistoryRepository(
             )
 
             logArray.add(callEntry)
-            // Keep only last 100 entries
-            val trimmedArray = if (logArray.size > 100) {
-                logArray.takeLast(100)
+            val trimmedArray = if (logArray.size > numberCallsToStore) {
+                logArray.takeLast(numberCallsToStore)
             } else {
                 logArray
             }

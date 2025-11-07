@@ -2,15 +2,17 @@ package ru.dmitry.callblocker.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import ru.dmitry.callblocker.core.CONST
 import ru.dmitry.callblocker.domain.model.AppLanguage
+import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
-import ru.dmitry.callblocker.domain.model.ThemeColor
 
 class AppConfigurationRepository(
     private val context: Context
@@ -22,7 +24,14 @@ class AppConfigurationRepository(
 
     var configuration: ConfigurationModel
         get() = preferences.getString(KEY_CONFIG, null)
-            ?.let { config -> Json.decodeFromString<ConfigurationModel>(config) }
+            ?.let { config ->
+                try {
+                    Json.decodeFromString<ConfigurationModel>(config)
+                } catch (e: Exception) {
+                    Log.e(CONST.APP_TAG, "Error while decode from cache", e)
+                    createDefaultConfig()
+                }
+            }
             ?: createDefaultConfig()
         set(value) {
             val jsonString = Json.encodeToString(value)
@@ -31,7 +40,7 @@ class AppConfigurationRepository(
 
     fun observe(): Flow<ConfigurationModel> = callbackFlow {
         trySend(configuration)
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { value, key ->
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == KEY_CONFIG) {
                 trySend(configuration)
             }
@@ -47,8 +56,9 @@ class AppConfigurationRepository(
             isScreenRoleGrand = false,
             isBlockUnknownNumberEnable = false,
             isPushEnable = true,
+            numberOfBlockCallToStore = 100,
             language = AppLanguage.RU.code,
-            theme = ThemeColor.DARK.themeName
+            theme = AppThemeColor.DARK.themeName
         )
     }
 
