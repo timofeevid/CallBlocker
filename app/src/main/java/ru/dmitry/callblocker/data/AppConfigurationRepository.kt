@@ -7,9 +7,8 @@ import androidx.core.content.edit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import ru.dmitry.callblocker.core.CONST
+import ru.dmitry.callblocker.core.Const
 import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
@@ -28,7 +27,7 @@ class AppConfigurationRepository(
                 try {
                     Json.decodeFromString<ConfigurationModel>(config)
                 } catch (e: Exception) {
-                    Log.e(CONST.APP_TAG, "Error while decode from cache", e)
+                    Log.e(Const.APP_TAG, "Error while decode from cache", e)
                     createDefaultConfig()
                 }
             }

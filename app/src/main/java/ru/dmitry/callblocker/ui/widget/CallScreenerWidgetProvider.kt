@@ -52,7 +52,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
             ACTION_TOGGLE_BLOCK -> {
                 val blockStatus = intent.getBooleanExtra(EXTRA_BLOCK_STATUS, false)
                 shouldBlockUnknownNumbers = !blockStatus
-                updateAllWidgets(context)
+                updateWidget(context)
             }
         }
     }
@@ -132,7 +132,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         private const val ACTION_TOGGLE_BLOCK = "ru.dmitry.callblocker.TOGGLE_BLOCK"
         private const val EXTRA_BLOCK_STATUS = "extra_block_status"
 
-        fun updateAllWidgets(context: Context) {
+        fun updateWidget(context: Context) {
             val intent = Intent(context, CallScreenerWidgetProvider::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             val ids = AppWidgetManager.getInstance(context)

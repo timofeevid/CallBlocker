@@ -3,7 +3,7 @@ package ru.dmitry.callblocker.data
 import android.content.Context
 import android.provider.ContactsContract
 import android.util.Log
-import ru.dmitry.callblocker.core.CONST
+import ru.dmitry.callblocker.core.Const
 
 class ContactsRepository(
     private val context: Context
@@ -35,12 +35,12 @@ class ContactsRepository(
                     val name = cursor.getString(
                         cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)
                     )
-                    Log.d(CONST.APP_TAG, "Found contact: $name for number: $phoneNumber")
+                    Log.d(Const.APP_TAG, "Found contact: $name for number: $phoneNumber")
                     return name
                 }
             }
         } catch (e: Exception) {
-            Log.e(CONST.APP_TAG, "Error checking contacts", e)
+            Log.e(Const.APP_TAG, "Error checking contacts", e)
         }
 
         return null

@@ -1,5 +1,5 @@
 package ru.dmitry.callblocker.core
 
-object CONST {
+object Const {
     const val APP_TAG = "CallBlockerTag"
 }

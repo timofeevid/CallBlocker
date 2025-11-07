@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
+import ru.dmitry.callblocker.ui.widget.WidgetUpdate
 
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
@@ -60,7 +60,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
     }
 
     LaunchedEffect(uiState.blockUnknownCalls, uiState.lastBlockedCall) {
-        CallScreenerWidgetProvider.updateAllWidgets(context)
+        WidgetUpdate.updateWidgets(context)
     }
 
     HomeScreenData(

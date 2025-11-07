@@ -4,13 +4,13 @@ import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
-import ru.dmitry.callblocker.core.CONST
+import ru.dmitry.callblocker.core.Const
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
 import ru.dmitry.callblocker.domain.model.NotificationData
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.domain.usecase.IsNumberInContactsUseCase
 import ru.dmitry.callblocker.domain.usecase.ShowBlockedCallNotificationUseCase
-import ru.dmitry.callblocker.ui.widget.CallScreenerWidgetProvider
+import ru.dmitry.callblocker.ui.widget.WidgetUpdate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,7 +33,7 @@ class CallScreenerService : CallScreeningService() {
         setServiceIsActive(config)
         val phoneNumber = callDetails.handle?.schemeSpecificPart
 
-        Log.d(CONST.APP_TAG, "Screening call from: $phoneNumber")
+        Log.d(Const.APP_TAG, "Screening call from: $phoneNumber")
 
         if (phoneNumber == null) {
             allowCall(callDetails)
@@ -43,16 +43,16 @@ class CallScreenerService : CallScreeningService() {
         val isKnownNumber = isNumberInContactsUseCase(phoneNumber)
 
         if (isKnownNumber) {
-            Log.d(CONST.APP_TAG, "Known contact - allowing call")
+            Log.d(Const.APP_TAG, "Known contact - allowing call")
             allowCall(callDetails)
         } else {
             val shouldBlock = config.isBlockUnknownNumberEnable
 
             if (shouldBlock) {
-                Log.d(CONST.APP_TAG, "Unknown number - blocking call")
+                Log.d(Const.APP_TAG, "Unknown number - blocking call")
                 blockCall(callDetails, phoneNumber, config.isPushEnable)
             } else {
-                Log.d(CONST.APP_TAG, "Unknown number - allowing call (blocking disabled)")
+                Log.d(Const.APP_TAG, "Unknown number - allowing call (blocking disabled)")
                 allowCall(callDetails)
             }
 
@@ -61,7 +61,7 @@ class CallScreenerService : CallScreeningService() {
                 wasBlocked = shouldBlock
             )
 
-            CallScreenerWidgetProvider.updateAllWidgets(this)
+            WidgetUpdate.updateWidgets(this)
         }
     }
 

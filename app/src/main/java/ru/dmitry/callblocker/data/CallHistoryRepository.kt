@@ -7,9 +7,8 @@ import androidx.core.content.edit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import ru.dmitry.callblocker.core.CONST
+import ru.dmitry.callblocker.core.Const
 import ru.dmitry.callblocker.data.model.CallEntry
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 
@@ -58,9 +57,9 @@ class CallHistoryRepository(
             val jsonString = Json.encodeToString(trimmedArray)
             prefs.edit { putString(KEY_CALL_LOG, jsonString) }
 
-            Log.d(CONST.APP_TAG, "Saved screened call: $phoneNumber, blocked: $wasBlocked")
+            Log.d(Const.APP_TAG, "Saved screened call: $phoneNumber, blocked: $wasBlocked")
         } catch (e: Exception) {
-            Log.e(CONST.APP_TAG, "Error saving call log", e)
+            Log.e(Const.APP_TAG, "Error saving call log", e)
         }
     }
 
@@ -76,7 +75,7 @@ class CallHistoryRepository(
                 }.sortedByDescending { it.timestamp }
             }
         } catch (e: Exception) {
-            Log.e(CONST.APP_TAG, "Error reading call log", e)
+            Log.e(Const.APP_TAG, "Error reading call log", e)
             emptyList()
         }
     }
