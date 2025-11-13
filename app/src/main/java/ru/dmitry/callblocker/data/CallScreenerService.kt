@@ -8,6 +8,7 @@ import ru.dmitry.callblocker.core.Const
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
 import ru.dmitry.callblocker.domain.model.NotificationData
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
+import ru.dmitry.callblocker.domain.usecase.IsNumberBlockedByPatternUseCase
 import ru.dmitry.callblocker.domain.usecase.IsNumberInContactsUseCase
 import ru.dmitry.callblocker.domain.usecase.ShowBlockedCallNotificationUseCase
 import ru.dmitry.callblocker.ui.widget.WidgetUpdate
@@ -26,6 +27,9 @@ class CallScreenerService : CallScreeningService() {
     lateinit var isNumberInContactsUseCase: IsNumberInContactsUseCase
 
     @Inject
+    lateinit var isNumberBlockedByPatternUseCase: IsNumberBlockedByPatternUseCase
+
+    @Inject
     lateinit var showBlockedCallNotificationUseCase: ShowBlockedCallNotificationUseCase
 
     override fun onScreenCall(callDetails: Call.Details) {
@@ -41,18 +45,19 @@ class CallScreenerService : CallScreeningService() {
         }
 
         val isKnownNumber = isNumberInContactsUseCase(phoneNumber)
+        val isBlockedByPattern = isNumberBlockedByPatternUseCase(phoneNumber)
 
         if (isKnownNumber) {
             Log.d(Const.APP_TAG, "Known contact - allowing call")
             allowCall(callDetails)
         } else {
-            val shouldBlock = config.isBlockUnknownNumberEnable
+            val shouldBlock = config.isBlockUnknownNumberEnable || (config.isBlockByPatternEnable && isBlockedByPattern)
 
             if (shouldBlock) {
-                Log.d(Const.APP_TAG, "Unknown number - blocking call")
+                Log.d(Const.APP_TAG, "Blocking call - ${if (isBlockedByPattern && config.isBlockByPatternEnable) "matches blocking pattern" else "unknown number blocking enabled"}")
                 blockCall(callDetails, phoneNumber, config.isPushEnable)
             } else {
-                Log.d(Const.APP_TAG, "Unknown number - allowing call (blocking disabled)")
+                Log.d(Const.APP_TAG, "Allowing call - unknown number blocking disabled")
                 allowCall(callDetails)
             }
 

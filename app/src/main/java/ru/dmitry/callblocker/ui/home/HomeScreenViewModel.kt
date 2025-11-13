@@ -29,6 +29,7 @@ class HomeScreenViewModel @Inject constructor(
                 screenedCalls = calls,
                 hasScreeningRole = config.isScreenRoleGrand,
                 blockUnknownCalls = config.isBlockUnknownNumberEnable,
+                blockByPattern = config.isBlockByPatternEnable,
                 lastBlockedCall = calls.firstOrNull { it.wasBlocked }
             )
         }
@@ -53,5 +54,11 @@ class HomeScreenViewModel @Inject constructor(
 
     fun clearCallLog() {
         callHistoryRepository.clearCallLog()
+    }
+
+    fun toggleBlockByPattern(enabled: Boolean) {
+        val currentConfig = appConfigurationInteractor.getConfiguration()
+        val newConfig = currentConfig.copy(isBlockByPatternEnable = enabled)
+        appConfigurationInteractor.updateConfig(newConfig)
     }
 }

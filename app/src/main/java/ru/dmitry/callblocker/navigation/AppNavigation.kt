@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.ui.home.HomeScreen
+import ru.dmitry.callblocker.ui.phonepatterns.PhonePatternsScreen
 import ru.dmitry.callblocker.ui.settings.SettingsScreen
 import ru.dmitry.callblocker.ui.settings.SettingsScreenViewModel
 import ru.dmitry.callblocker.ui.theme.CallBlockerTheme
@@ -39,7 +40,10 @@ fun AppNavigation() {
                         HomeScreen()
                     }
                     composable(route = Screen.Settings.route) {
-                        SettingsScreen()
+                        SettingsScreen(navController = navController)
+                    }
+                    composable(route = Screen.PhonePatterns.route) {
+                        PhonePatternsScreen(onBackClick = { navController.popBackStack() })
                     }
                 }
             }

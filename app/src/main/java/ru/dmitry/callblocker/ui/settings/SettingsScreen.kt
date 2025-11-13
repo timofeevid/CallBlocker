@@ -1,5 +1,6 @@
 package ru.dmitry.callblocker.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,12 +25,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.AppThemeColor
+import ru.dmitry.callblocker.navigation.Screen
 
 @Composable
-fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    navController: NavHostController,
+    viewModel: SettingsScreenViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var numberOfCallsText by remember(uiState.numberOfBlockCallToStore) {
         mutableStateOf(uiState.numberOfBlockCallToStore.toString())
@@ -113,5 +119,23 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = hiltViewModel()) {
             onValueChanged = { viewModel.updateTheme(it) },
             modifier = Modifier.fillMaxWidth()
         )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .clickable { navController.navigate(Screen.PhonePatterns.route) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.phone_patterns_setting),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+        }
     }
 }

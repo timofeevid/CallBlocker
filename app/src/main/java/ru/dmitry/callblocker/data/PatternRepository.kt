@@ -1,0 +1,59 @@
+package ru.dmitry.callblocker.data
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
+import androidx.core.content.edit
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.serialization.json.Json
+import ru.dmitry.callblocker.core.Const
+import ru.dmitry.callblocker.data.model.PhonePattern
+
+class PatternRepository(
+    private val context: Context
+) {
+
+    private val preferences: SharedPreferences by lazy {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+
+    private val json = Json { prettyPrint = true }
+
+    fun getPhonePatterns(): List<PhonePattern> {
+        return preferences.getString(KEY_PATTERNS, null)
+            ?.let { patterns ->
+                try {
+                    json.decodeFromString<List<PhonePattern>>(patterns)
+                } catch (e: Exception) {
+                    Log.e(Const.APP_TAG, "Error while decode patterns from cache", e)
+                    emptyList()
+                }
+            }
+            ?: emptyList()
+    }
+
+    fun savePhonePatterns(patterns: List<PhonePattern>) {
+        val jsonString = json.encodeToString(patterns)
+        preferences.edit { putString(KEY_PATTERNS, jsonString) }
+    }
+
+    fun observePhonePatterns(): Flow<List<PhonePattern>> = callbackFlow {
+        trySend(getPhonePatterns())
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == KEY_PATTERNS) {
+                trySend(getPhonePatterns())
+            }
+        }
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+        awaitClose {
+            preferences.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
+
+    private companion object {
+        const val PREFS_NAME = "CallScreenerPatterns"
+        const val KEY_PATTERNS = "patterns"
+    }
+}

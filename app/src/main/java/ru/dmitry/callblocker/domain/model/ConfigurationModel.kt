@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class ConfigurationModel(
     val isScreenRoleGrand: Boolean,
     val isBlockUnknownNumberEnable: Boolean,
+    val isBlockByPatternEnable: Boolean,
     val isPushEnable: Boolean,
     val numberOfBlockCallToStore: Int,
     val language: String,

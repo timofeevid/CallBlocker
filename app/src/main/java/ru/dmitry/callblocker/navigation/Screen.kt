@@ -13,4 +13,5 @@ sealed class Screen(
 ) {
     data object Home : Screen("home", R.string.home, Icons.Default.Home)
     data object Settings : Screen("settings", R.string.settings, Icons.Default.Settings)
+    data object PhonePatterns : Screen("phone_patterns", R.string.phone_patterns, Icons.Default.Settings)
 }

@@ -54,6 +54,7 @@ class AppConfigurationRepository(
         return ConfigurationModel(
             isScreenRoleGrand = false,
             isBlockUnknownNumberEnable = false,
+            isBlockByPatternEnable = true,
             isPushEnable = true,
             numberOfBlockCallToStore = 100,
             language = AppLanguage.RU.code,

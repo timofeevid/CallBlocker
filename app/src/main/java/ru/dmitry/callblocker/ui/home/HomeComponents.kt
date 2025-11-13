@@ -152,6 +152,50 @@ fun CallBlockingCard(
 }
 
 @Composable
+fun PatternBlockingCard(
+    isEnabled: Boolean,
+    canToggle: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.pattern_blocking_title),
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.block_by_pattern_label),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Switch(
+                    checked = isEnabled,
+                    onCheckedChange = onToggle,
+                    enabled = canToggle
+                )
+            }
+
+            Text(
+                text = stringResource(R.string.block_by_pattern_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
 fun CallLogCard(
     calls: List<ScreenedCall>,
     onClearLog: () -> Unit

@@ -105,6 +105,14 @@ private fun HomeScreenData(
         }
 
         item {
+            PatternBlockingCard(
+                isEnabled = uiState.blockByPattern,
+                canToggle = uiState.hasPermissions && uiState.hasScreeningRole,
+                onToggle = { viewModel.toggleBlockByPattern(it) }
+            )
+        }
+
+        item {
             CallLogCard(
                 calls = uiState.screenedCalls,
                 onClearLog = { viewModel.clearCallLog() }
