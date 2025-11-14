@@ -125,8 +125,8 @@ fun SettingsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .clickable { navController.navigate(Screen.PhonePatterns.route) },
+                .clickable { navController.navigate(Screen.PhonePatterns.route) }
+                .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

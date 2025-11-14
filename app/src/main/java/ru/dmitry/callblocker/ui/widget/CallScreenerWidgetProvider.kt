@@ -67,31 +67,6 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
 
         val views = RemoteViews(context.packageName, R.layout.widget_call_screener)
 
-        // Set blocking status text and color
-        views.setTextViewText(
-            R.id.widget_block_toggle,
-            if (shouldBlockUnknownNumbers) context.getString(R.string.widget_blocking_on) else context.getString(
-                R.string.widget_blocking_off
-            )
-        )
-        views.setTextColor(
-            R.id.widget_block_toggle,
-            if (shouldBlockUnknownNumbers) 0xFF4CAF50.toInt() else 0xFFFF5252.toInt() // Green when enabled, red when disabled
-        )
-
-        // Set toggle click listener
-        val toggleIntent = Intent(context, CallScreenerWidgetProvider::class.java).apply {
-            action = ACTION_TOGGLE_BLOCK
-            putExtra(EXTRA_BLOCK_STATUS, shouldBlockUnknownNumbers)
-        }
-        val togglePendingIntent = PendingIntent.getBroadcast(
-            context,
-            appWidgetId,
-            toggleIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        views.setOnClickPendingIntent(R.id.widget_block_toggle, togglePendingIntent)
-
         // Set click listener for the whole widget to open the app
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(

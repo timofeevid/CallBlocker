@@ -7,24 +7,6 @@
     android:padding="16dp"
     android:background="@drawable/widget_background_dark">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
-
-        <TextView
-            android:id="@+id/widget_block_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/widget_blocking_on"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#4CAF50" />
-
-    </LinearLayout>
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

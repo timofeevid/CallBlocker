@@ -35,8 +35,8 @@
     
     <!-- Phone Patterns Screen Strings -->
     <string name="phone_patterns">Шаблоны телефонных номеров</string>
-    <string name="phone_patterns_setting">Шаблоны</string>
-    <string name="phone_patterns_screen_title">Шаблоны телефонных номеров</string>
+    <string name="phone_patterns_setting">Шаблоны телефонных номеров</string>
+    <string name="phone_patterns_screen_title">Шаблоны</string>
     <string name="add_phone_pattern">Добавить шаблон</string>
     <string name="phone_pattern_label">Шаблон телефона</string>
     <string name="block_this_pattern">Блокировать этот шаблон</string>

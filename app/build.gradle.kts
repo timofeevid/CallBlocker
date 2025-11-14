@@ -1,3 +1,6 @@
+import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.api.BaseVariantOutput
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -19,8 +22,8 @@ android {
         applicationId = "ru.dmitry.callblocker"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,10 +48,26 @@ android {
         }
     }
 
-
     buildFeatures {
         compose = true
     }
+
+    applicationVariants.all(object : Action<ApplicationVariant> {
+        override fun execute(variant: ApplicationVariant) {
+            variant.outputs.all(object : Action<BaseVariantOutput> {
+                override fun execute(output: BaseVariantOutput) {
+                    val outputImpl = output as BaseVariantOutputImpl
+                    val fileName = output.outputFileName
+                    val newFileName = if (fileName.contains("-release")) {
+                        "Callblocker-release-v${defaultConfig.versionName}.apk"
+                    } else {
+                        "Callblocker-debug-v${defaultConfig.versionName}.apk"
+                    }
+                    outputImpl.outputFileName = newFileName
+                }
+            })
+        }
+    })
 }
 
 dependencies {
