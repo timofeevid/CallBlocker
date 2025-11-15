@@ -1,4 +1,4 @@
-package ru.dmitry.callblocker.ui.settings
+package ru.dmitry.callblocker.designSystem
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import ru.dmitry.callblocker.R
 
 @Composable
-fun <T : Enum<T>> ExpandableSettingItem(
+fun <T : Enum<T>> ExpandableItem(
     title: Int,
     currentValue: T,
     values: Array<T>,

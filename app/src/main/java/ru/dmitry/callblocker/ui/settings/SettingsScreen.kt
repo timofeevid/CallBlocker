@@ -27,6 +27,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ru.dmitry.callblocker.R
+import ru.dmitry.callblocker.designSystem.ExpandableItem
 import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.navigation.Screen
@@ -89,8 +90,8 @@ fun SettingsScreen(
         )
         
         Spacer(modifier = Modifier.height(16.dp))
-        
-        ExpandableSettingItem(
+
+        ExpandableItem(
             title = R.string.language_setting,
             currentValue = uiState.appLanguage,
             values = AppLanguage.entries.toTypedArray(),
@@ -105,8 +106,8 @@ fun SettingsScreen(
         )
         
         Spacer(modifier = Modifier.height(16.dp))
-        
-        ExpandableSettingItem(
+
+        ExpandableItem(
             title = R.string.theme_setting,
             currentValue = uiState.theme,
             values = AppThemeColor.entries.toTypedArray(),

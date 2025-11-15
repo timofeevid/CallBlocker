@@ -9,13 +9,13 @@ import android.content.Intent
 import android.widget.RemoteViews
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.R
+import ru.dmitry.callblocker.core.DateUtils.DD_MM_YYYY_HH_MM
+import ru.dmitry.callblocker.core.DateUtils.toFormatter
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.ui.MainActivity
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -67,7 +67,6 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
 
         val views = RemoteViews(context.packageName, R.layout.widget_call_screener)
 
-        // Set click listener for the whole widget to open the app
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -77,20 +76,15 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         )
         views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
-        // Clear previous views
         views.removeAllViews(R.id.widget_blocked_calls_container)
 
-        // Add blocked calls
         if (blockedCalls.isNotEmpty()) {
             for (call in blockedCalls) {
                 val itemView = RemoteViews(context.packageName, R.layout.widget_blocked_call_item)
 
-                // Get contact name or show phone number
                 val contactName = ContactsRepository(context).getContactName(call.phoneNumber)
                 val displayName = contactName ?: call.phoneNumber
-
-                // Format time as HH:mm
-                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val timeFormat = DD_MM_YYYY_HH_MM.toFormatter()
                 val timeText = timeFormat.format(Date(call.timestamp))
 
                 itemView.setTextViewText(R.id.widget_blocked_number, displayName)
