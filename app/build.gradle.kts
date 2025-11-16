@@ -1,6 +1,3 @@
-import com.android.build.gradle.api.ApplicationVariant
-import com.android.build.gradle.api.BaseVariantOutput
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -23,7 +20,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 2
-        versionName = "1.1"
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,22 +49,19 @@ android {
         compose = true
     }
 
-    applicationVariants.all(object : Action<ApplicationVariant> {
-        override fun execute(variant: ApplicationVariant) {
-            variant.outputs.all(object : Action<BaseVariantOutput> {
-                override fun execute(output: BaseVariantOutput) {
-                    val outputImpl = output as BaseVariantOutputImpl
-                    val fileName = output.outputFileName
-                    val newFileName = if (fileName.contains("-release")) {
-                        "Callblocker-release-v${defaultConfig.versionName}.apk"
-                    } else {
-                        "Callblocker-debug-v${defaultConfig.versionName}.apk"
-                    }
-                    outputImpl.outputFileName = newFileName
+    applicationVariants.all {
+        this.outputs
+            .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
+            .forEach { output ->
+                val fileName = output.outputFileName
+                val newFileName = if (fileName.contains("-release")) {
+                    "Callblocker-release-v${defaultConfig.versionName}.apk"
+                } else {
+                    "Callblocker-debug-v${defaultConfig.versionName}.apk"
                 }
-            })
-        }
-    })
+                output.outputFileName = newFileName
+            }
+    }
 }
 
 dependencies {
@@ -84,12 +78,12 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.navigation.compose)
-    
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    
+
     implementation(libs.kotlinx.serialization.json)
-    
+
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
