@@ -26,11 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ru.dmitry.callblocker.R
+import ru.dmitry.callblocker.core.formatters.mask.TextInputMask
 import ru.dmitry.callblocker.data.model.PhonePattern
-import ru.dmitry.callblocker.ui.utils.PhoneNumberVisualTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,18 +66,18 @@ fun PhonePatternBottomSheet(
             OutlinedTextField(
                 value = patternText,
                 onValueChange = {
-                    if (
-                        it.length <= PhoneNumberVisualTransformation.MAX_PHONE_DIGITS &&
-                        it.all { char -> char.isDigit() || char == '*' || char == '+' }
-                    ) {
+                    if (it.all { char -> char.isDigit() || char == '*' || char == '+' }) {
                         patternText = it
                     }
                 },
                 label = { Text(stringResource(id = R.string.phone_pattern_label)) },
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PhoneNumberVisualTransformation(),
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = KeyboardType.Number
+                visualTransformation = TextInputMask(
+                    if (patternText.length > 11) {
+                        "###-###-###-###"
+                    } else {
+                        "+# (###) ###-##-##"
+                    }
                 ),
                 maxLines = 1,
                 singleLine = true,

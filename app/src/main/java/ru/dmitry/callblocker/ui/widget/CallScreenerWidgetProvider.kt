@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.core.DateUtils.DD_MM_YYYY_HH_MM
 import ru.dmitry.callblocker.core.DateUtils.toFormatter
+import ru.dmitry.callblocker.core.formatters.PhoneNumberFormatter
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
@@ -63,7 +64,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         appWidgetId: Int
     ) {
         val calls = callHistoryRepository.getScreenedCalls()
-        val blockedCalls = calls.filter { it.wasBlocked }.take(3)
+        val blockedCalls = calls.filter { it.wasBlocked }.take(5)
 
         val views = RemoteViews(context.packageName, R.layout.widget_call_screener)
 
@@ -83,7 +84,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
                 val itemView = RemoteViews(context.packageName, R.layout.widget_blocked_call_item)
 
                 val contactName = ContactsRepository(context).getContactName(call.phoneNumber)
-                val displayName = contactName ?: call.phoneNumber
+                val displayName = contactName ?: PhoneNumberFormatter.format(call.phoneNumber)
                 val timeFormat = DD_MM_YYYY_HH_MM.toFormatter()
                 val timeText = timeFormat.format(Date(call.timestamp))
 

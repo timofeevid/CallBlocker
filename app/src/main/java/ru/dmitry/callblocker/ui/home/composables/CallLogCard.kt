@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.dmitry.callblocker.R
+import ru.dmitry.callblocker.core.formatters.PhoneNumberFormatter
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 
@@ -84,7 +85,7 @@ fun CallLogItem(call: ScreenedCall) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = contactName ?: call.phoneNumber,
+                text = contactName ?: PhoneNumberFormatter.format(call.phoneNumber),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
