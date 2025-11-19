@@ -27,6 +27,7 @@
     <string name="no_screened_calls">No screened calls yet</string>
     <string name="blocked_status">BLOCKED</string>
     <string name="screened_status">SCREENED</string>
+    <string name="show_more_button">Show more</string>
     <string name="days_ago">%1$d day%2$s ago</string>
     <string name="hours_ago">%1$d hour%2$s ago</string>
     <string name="minutes_ago">%1$d minute%2$s ago</string>
@@ -70,6 +71,6 @@
     <string name="widget_last_screened">Last screened: %1$s</string>
     <string name="widget_no_calls">No calls screened yet</string>
     <string name="widget_last_blocked">Last blocked:\n%1$s\n%2$s</string>
-    <string name="widget_recently_blocked">Recently Blocked:</string>
+    <string name="widget_recently_blocked">Blocked today:</string>
     <string name="widget_blocked_item">%1$s at %2$s</string>
 </resources>

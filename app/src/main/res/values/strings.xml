@@ -27,6 +27,7 @@
     <string name="no_screened_calls">Пока нет проверенных звонков</string>
     <string name="blocked_status">ЗАБЛОКИРОВАН</string>
     <string name="screened_status">ПРОВЕРЕН</string>
+    <string name="show_more_button">Показать еще</string>
     <string name="days_ago">%1$d день%2$s назад</string>
     <string name="hours_ago">%1$d час%2$s назад</string>
     <string name="minutes_ago">%1$d минут%2$s назад</string>
@@ -72,6 +73,6 @@
     <string name="widget_last_blocked">Последний заблокированный:
 %1$s
 %2$s</string>
-    <string name="widget_recently_blocked">Недавно заблокированные:</string>
+    <string name="widget_recently_blocked">Заблокированные за сегодня:</string>
     <string name="widget_blocked_item">%1$s в %2$s</string>
 </resources>

@@ -9,13 +9,16 @@ import android.content.Intent
 import android.widget.RemoteViews
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.R
-import ru.dmitry.callblocker.core.DateUtils.DD_MM_YYYY_HH_MM
+import ru.dmitry.callblocker.core.DateUtils.HH_MM
 import ru.dmitry.callblocker.core.DateUtils.toFormatter
 import ru.dmitry.callblocker.core.formatters.PhoneNumberFormatter
 import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.ui.MainActivity
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 import javax.inject.Inject
 
@@ -64,7 +67,15 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         appWidgetId: Int
     ) {
         val calls = callHistoryRepository.getScreenedCalls()
-        val blockedCalls = calls.filter { it.wasBlocked }.take(5)
+        val zoneId = ZoneId.systemDefault()
+        val blockedCalls = calls
+            .filter {
+                val date = Instant.ofEpochMilli(it.timestamp)
+                    .atZone(zoneId)
+                    .toLocalDate()
+                it.wasBlocked && date == LocalDate.now(zoneId)
+            }
+            .take(5)
 
         val views = RemoteViews(context.packageName, R.layout.widget_call_screener)
 
@@ -85,7 +96,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
 
                 val contactName = ContactsRepository(context).getContactName(call.phoneNumber)
                 val displayName = contactName ?: PhoneNumberFormatter.format(call.phoneNumber)
-                val timeFormat = DD_MM_YYYY_HH_MM.toFormatter()
+                val timeFormat = HH_MM.toFormatter()
                 val timeText = timeFormat.format(Date(call.timestamp))
 
                 itemView.setTextViewText(R.id.widget_blocked_number, displayName)
