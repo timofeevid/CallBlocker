@@ -1,11 +1,11 @@
 package ru.dmitry.callblocker.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import ru.dmitry.callblocker.data.PatternRepository
+import ru.dmitry.callblocker.data.api.PatternRepositoryApi
 import ru.dmitry.callblocker.data.model.PhonePattern
 
 class PatternInteractor(
-    private val patternRepository: PatternRepository
+    private val patternRepository: PatternRepositoryApi
 ) {
 
     fun addPhonePattern(pattern: PhonePattern) {

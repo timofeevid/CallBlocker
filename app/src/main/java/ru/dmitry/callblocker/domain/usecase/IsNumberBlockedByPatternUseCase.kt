@@ -1,10 +1,10 @@
 package ru.dmitry.callblocker.domain.usecase
 
-import ru.dmitry.callblocker.data.PatternRepository
+import ru.dmitry.callblocker.data.api.PatternRepositoryApi
 import ru.dmitry.callblocker.data.model.PhonePattern
 
 class IsNumberBlockedByPatternUseCase(
-    private val patternRepository: PatternRepository
+    private val patternRepository: PatternRepositoryApi
 ) {
     /**
      * Checks if a phone number is blocked by any pattern.

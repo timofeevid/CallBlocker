@@ -12,8 +12,8 @@ import ru.dmitry.callblocker.R
 import ru.dmitry.callblocker.core.DateUtils.HH_MM
 import ru.dmitry.callblocker.core.DateUtils.toFormatter
 import ru.dmitry.callblocker.core.formatters.PhoneNumberFormatter
-import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
+import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.ui.MainActivity
 import java.time.Instant
@@ -29,7 +29,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
     lateinit var appConfigurationInteractor: AppConfigurationInteractor
 
     @Inject
-    lateinit var callHistoryRepository: CallHistoryRepository
+    lateinit var callHistoryRepository: CallHistoryRepositoryApi
 
     private var shouldBlockUnknownNumbers: Boolean
         get() = appConfigurationInteractor.getConfiguration().isBlockUnknownNumberEnable

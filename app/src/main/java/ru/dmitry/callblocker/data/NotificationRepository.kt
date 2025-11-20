@@ -6,14 +6,15 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import ru.dmitry.callblocker.data.api.NotificationRepositoryApi
 import ru.dmitry.callblocker.domain.model.NotificationData
 import ru.dmitry.callblocker.ui.MainActivity
 
 class NotificationRepository(
     private val context: Context
-) {
+) : NotificationRepositoryApi {
 
-    fun showBlockedCallNotification(params: NotificationData) {
+    override fun showBlockedCallNotification(params: NotificationData) {
         createNotificationChannel(params.channelId, params.channelName)
 
         val intent = Intent(context, MainActivity::class.java).apply {

@@ -1,11 +1,11 @@
 package ru.dmitry.callblocker.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import ru.dmitry.callblocker.data.AppConfigurationRepository
+import ru.dmitry.callblocker.data.api.AppConfigurationRepositoryApi
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
 
 class AppConfigurationInteractor(
-    private val appConfigurationRepository: AppConfigurationRepository
+    private val appConfigurationRepository: AppConfigurationRepositoryApi
 ) {
 
     fun getConfiguration(): ConfigurationModel {

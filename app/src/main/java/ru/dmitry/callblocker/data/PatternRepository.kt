@@ -9,11 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.core.Const
+import ru.dmitry.callblocker.data.api.PatternRepositoryApi
 import ru.dmitry.callblocker.data.model.PhonePattern
 
 class PatternRepository(
     private val context: Context
-) {
+) : PatternRepositoryApi {
 
     private val preferences: SharedPreferences by lazy {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -21,7 +22,7 @@ class PatternRepository(
 
     private val json = Json { prettyPrint = true }
 
-    fun getPhonePatterns(): List<PhonePattern> {
+    override fun getPhonePatterns(): List<PhonePattern> {
         return preferences.getString(KEY_PATTERNS, null)
             ?.let { patterns ->
                 try {
@@ -34,12 +35,12 @@ class PatternRepository(
             ?: emptyList()
     }
 
-    fun savePhonePatterns(patterns: List<PhonePattern>) {
+    override fun savePhonePatterns(patterns: List<PhonePattern>) {
         val jsonString = json.encodeToString(patterns)
         preferences.edit { putString(KEY_PATTERNS, jsonString) }
     }
 
-    fun observePhonePatterns(): Flow<List<PhonePattern>> = callbackFlow {
+    override fun observePhonePatterns(): Flow<List<PhonePattern>> = callbackFlow {
         trySend(getPhonePatterns())
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == KEY_PATTERNS) {

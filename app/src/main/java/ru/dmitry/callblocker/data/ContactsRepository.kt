@@ -4,16 +4,17 @@ import android.content.Context
 import android.provider.ContactsContract
 import android.util.Log
 import ru.dmitry.callblocker.core.Const
+import ru.dmitry.callblocker.data.api.ContactsRepositoryApi
 
 class ContactsRepository(
     private val context: Context
-) {
+) : ContactsRepositoryApi {
     
-    fun isNumberInContacts(phoneNumber: String): Boolean {
+    override fun isNumberInContacts(phoneNumber: String): Boolean {
         return queryContact(phoneNumber) != null
     }
 
-    fun getContactName(phoneNumber: String): String? {
+    override fun getContactName(phoneNumber: String): String? {
         return queryContact(phoneNumber)
     }
     

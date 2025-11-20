@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import ru.dmitry.callblocker.data.CallHistoryRepository
+import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val appConfigurationInteractor: AppConfigurationInteractor,
-    private val callHistoryRepository: CallHistoryRepository
+    private val callHistoryRepository: CallHistoryRepositoryApi
 ) : ViewModel() {
 
     private val permissionStateFlow = MutableStateFlow(false)

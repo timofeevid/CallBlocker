@@ -9,13 +9,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.core.Const
+import ru.dmitry.callblocker.data.api.AppConfigurationRepositoryApi
+import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.data.model.CallEntry
 import ru.dmitry.callblocker.domain.model.ScreenedCall
 
 class CallHistoryRepository(
     private val context: Context,
-    private val appConfigurationRepository: AppConfigurationRepository,
-) {
+    private val appConfigurationRepository: AppConfigurationRepositoryApi,
+) : CallHistoryRepositoryApi {
 
     companion object {
         private const val PREFS_NAME = "CallScreenerPrefs"
@@ -29,7 +31,7 @@ class CallHistoryRepository(
     private val numberCallsToStore: Int
         get() = appConfigurationRepository.configuration.numberOfBlockCallToStore
 
-    fun saveScreenedCall(
+    override fun saveScreenedCall(
         phoneNumber: String,
         wasBlocked: Boolean
     ) {
@@ -63,7 +65,7 @@ class CallHistoryRepository(
         }
     }
 
-    fun getScreenedCalls(): List<ScreenedCall> {
+    override fun getScreenedCalls(): List<ScreenedCall> {
         return try {
             val logString = prefs.getString(KEY_CALL_LOG, "[]")
             if (logString.isNullOrEmpty()) {
@@ -80,7 +82,7 @@ class CallHistoryRepository(
         }
     }
 
-    fun observeScreenedCalls(): Flow<List<ScreenedCall>> = callbackFlow {
+    override fun observeScreenedCalls(): Flow<List<ScreenedCall>> = callbackFlow {
         trySend(getScreenedCalls())
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == KEY_CALL_LOG) {
@@ -93,7 +95,7 @@ class CallHistoryRepository(
         }
     }
 
-    fun clearCallLog() {
+    override fun clearCallLog() {
         prefs.edit { putString(KEY_CALL_LOG, "[]") }
     }
 }

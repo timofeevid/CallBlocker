@@ -5,11 +5,11 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.core.Const
+import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
 import ru.dmitry.callblocker.domain.model.NotificationData
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
-import ru.dmitry.callblocker.domain.usecase.IsNumberBlockedByPatternUseCase
-import ru.dmitry.callblocker.domain.usecase.IsNumberInContactsUseCase
+import ru.dmitry.callblocker.domain.usecase.CallScreeningDecisionInteractor
 import ru.dmitry.callblocker.domain.usecase.ShowBlockedCallNotificationUseCase
 import ru.dmitry.callblocker.ui.widget.WidgetUpdate
 import javax.inject.Inject
@@ -21,13 +21,10 @@ class CallScreenerService : CallScreeningService() {
     lateinit var appConfigurationInteractor: AppConfigurationInteractor
 
     @Inject
-    lateinit var callHistoryRepository: CallHistoryRepository
+    lateinit var callHistoryRepository: CallHistoryRepositoryApi
 
     @Inject
-    lateinit var isNumberInContactsUseCase: IsNumberInContactsUseCase
-
-    @Inject
-    lateinit var isNumberBlockedByPatternUseCase: IsNumberBlockedByPatternUseCase
+    lateinit var callScreeningDecisionInteractor: CallScreeningDecisionInteractor
 
     @Inject
     lateinit var showBlockedCallNotificationUseCase: ShowBlockedCallNotificationUseCase
@@ -39,31 +36,20 @@ class CallScreenerService : CallScreeningService() {
 
         Log.d(Const.APP_TAG, "Screening call from: $phoneNumber")
 
-        if (phoneNumber == null) {
+        val screeningResult = callScreeningDecisionInteractor.screenCall(phoneNumber)
+
+        if (screeningResult.shouldBlock) {
+            Log.d(Const.APP_TAG, "Blocking call - reason: ${screeningResult.reason}")
+            blockCall(callDetails, phoneNumber!!, config.isPushEnable)
+        } else {
+            Log.d(Const.APP_TAG, "Allowing call - reason: ${screeningResult.reason}")
             allowCall(callDetails)
-            return
         }
 
-        val isKnownNumber = isNumberInContactsUseCase(phoneNumber)
-        val isBlockedByPattern = isNumberBlockedByPatternUseCase(phoneNumber)
-
-        if (isKnownNumber) {
-            Log.d(Const.APP_TAG, "Known contact - allowing call")
-            allowCall(callDetails)
-        } else {
-            val shouldBlock = config.isBlockUnknownNumberEnable || (config.isBlockByPatternEnable && isBlockedByPattern)
-
-            if (shouldBlock) {
-                Log.d(Const.APP_TAG, "Blocking call - ${if (isBlockedByPattern && config.isBlockByPatternEnable) "matches blocking pattern" else "unknown number blocking enabled"}")
-                blockCall(callDetails, phoneNumber, config.isPushEnable)
-            } else {
-                Log.d(Const.APP_TAG, "Allowing call - unknown number blocking disabled")
-                allowCall(callDetails)
-            }
-
+        if (phoneNumber != null) {
             callHistoryRepository.saveScreenedCall(
                 phoneNumber = phoneNumber,
-                wasBlocked = shouldBlock
+                wasBlocked = screeningResult.shouldBlock
             )
 
             WidgetUpdate.updateWidgets(this)

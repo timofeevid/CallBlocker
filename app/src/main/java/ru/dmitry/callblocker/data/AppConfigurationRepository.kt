@@ -9,19 +9,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.core.Const
+import ru.dmitry.callblocker.data.api.AppConfigurationRepositoryApi
 import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
 
 class AppConfigurationRepository(
     private val context: Context
-) {
+) : AppConfigurationRepositoryApi {
 
     private val preferences: SharedPreferences by lazy {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    var configuration: ConfigurationModel
+    override var configuration: ConfigurationModel
         get() = preferences.getString(KEY_CONFIG, null)
             ?.let { config ->
                 try {
@@ -37,7 +38,7 @@ class AppConfigurationRepository(
             preferences.edit { putString(KEY_CONFIG, jsonString) }
         }
 
-    fun observe(): Flow<ConfigurationModel> = callbackFlow {
+    override fun observe(): Flow<ConfigurationModel> = callbackFlow {
         trySend(configuration)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == KEY_CONFIG) {
