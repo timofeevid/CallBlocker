@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PhonePattern(
     val pattern: String,
-    val isNegativePattern: Boolean
+    val isNegativePattern: Boolean,
+    val type: PhonePatternType = PhonePatternType.RUSSIAN_MOBILE
 )

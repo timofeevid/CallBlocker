@@ -16,9 +16,6 @@
     <string name="enable_call_screening_button">Включить фильтрацию звонков</string>
     <string name="granted_status">Предоставлено</string>
     <string name="not_granted_status">Не предоставлено</string>
-    <string name="call_blocking_title">Блокировка звонков</string>
-    <string name="block_unknown_numbers_label">Блокировать неизвестные номера</string>
-    <string name="block_unknown_numbers_description">Когда включено, звонки с номеров, не находящихся в ваших контактах, будут автоматически отклоняться.</string>
     <string name="pattern_blocking_title">Блокировка по шаблонам</string>
     <string name="block_by_pattern_label">Блокировать по шаблонам</string>
     <string name="block_by_pattern_description">Когда включено, звонки, соответствующие заданным шаблонам, будут автоматически отклоняться.</string>
@@ -41,6 +38,7 @@
     <string name="add_phone_pattern">Добавить шаблон</string>
     <string name="phone_pattern_label">Шаблон телефона</string>
     <string name="block_this_pattern">Блокировать этот шаблон</string>
+    <string name="select_pattern">Выберите шаблон</string>
     <string name="cancel">Отмена</string>
     <string name="save">Сохранить</string>
     <string name="delete">Удалить</string>

@@ -11,11 +11,11 @@ import ru.dmitry.callblocker.data.CallHistoryRepository
 import ru.dmitry.callblocker.data.ContactsRepository
 import ru.dmitry.callblocker.data.NotificationRepository
 import ru.dmitry.callblocker.data.PatternRepository
-import ru.dmitry.callblocker.data.api.AppConfigurationRepositoryApi
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
-import ru.dmitry.callblocker.data.api.ContactsRepositoryApi
-import ru.dmitry.callblocker.data.api.NotificationRepositoryApi
-import ru.dmitry.callblocker.data.api.PatternRepositoryApi
+import ru.dmitry.callblocker.domain.repository.AppConfigurationRepositoryApi
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
+import ru.dmitry.callblocker.domain.repository.ContactsRepositoryApi
+import ru.dmitry.callblocker.domain.repository.NotificationRepositoryApi
+import ru.dmitry.callblocker.domain.repository.PatternRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.domain.usecase.CallScreeningDecisionInteractor
 import ru.dmitry.callblocker.domain.usecase.GetContactNameUseCase

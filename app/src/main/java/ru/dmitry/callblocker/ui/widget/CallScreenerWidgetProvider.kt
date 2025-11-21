@@ -13,7 +13,7 @@ import ru.dmitry.callblocker.core.DateUtils.HH_MM
 import ru.dmitry.callblocker.core.DateUtils.toFormatter
 import ru.dmitry.callblocker.core.formatters.PhoneNumberFormatter
 import ru.dmitry.callblocker.data.ContactsRepository
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.ui.MainActivity
 import java.time.Instant
@@ -31,11 +31,11 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
     @Inject
     lateinit var callHistoryRepository: CallHistoryRepositoryApi
 
-    private var shouldBlockUnknownNumbers: Boolean
-        get() = appConfigurationInteractor.getConfiguration().isBlockUnknownNumberEnable
+    private var shouldBlockByPatternNumbers: Boolean
+        get() = appConfigurationInteractor.getConfiguration().isBlockByPatternEnable
         set(value) {
             val currentConfig = appConfigurationInteractor.getConfiguration()
-            val newConfig = currentConfig.copy(isBlockUnknownNumberEnable = value)
+            val newConfig = currentConfig.copy(isBlockByPatternEnable = value)
             appConfigurationInteractor.updateConfig(newConfig)
         }
 
@@ -55,7 +55,7 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
         when (intent.action) {
             ACTION_TOGGLE_BLOCK -> {
                 val blockStatus = intent.getBooleanExtra(EXTRA_BLOCK_STATUS, false)
-                shouldBlockUnknownNumbers = !blockStatus
+                shouldBlockByPatternNumbers = !blockStatus
                 updateWidget(context)
             }
         }
@@ -78,6 +78,14 @@ class CallScreenerWidgetProvider : AppWidgetProvider() {
             .take(5)
 
         val views = RemoteViews(context.packageName, R.layout.widget_call_screener)
+
+        val config = appConfigurationInteractor.getConfiguration()
+        val textColor = if (config.isBlockByPatternEnable) {
+            0xFF00FF00.toInt() // Green color
+        } else {
+            0xFFCCCCCC.toInt() // Gray color
+        }
+        views.setTextColor(R.id.widget_title, textColor)
 
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(

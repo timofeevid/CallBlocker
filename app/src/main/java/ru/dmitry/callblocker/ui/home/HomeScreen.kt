@@ -49,7 +49,6 @@ private fun HomeScreenData(
                 isBlockUnknownCalls = uiState.blockUnknownCalls,
                 isBlockByPattern = uiState.blockByPattern,
                 canToggle = uiState.hasPermissions && uiState.hasScreeningRole,
-                onToggleBlockUnknowCalls = { viewModel.toggleBlockUnknownCalls(it) },
                 onToggleBlockByPattern = { viewModel.toggleBlockByPattern(it) }
             )
         }

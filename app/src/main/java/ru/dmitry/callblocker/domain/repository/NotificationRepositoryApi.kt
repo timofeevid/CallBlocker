@@ -1,4 +1,4 @@
-package ru.dmitry.callblocker.data.api
+package ru.dmitry.callblocker.domain.repository
 
 import ru.dmitry.callblocker.domain.model.NotificationData
 

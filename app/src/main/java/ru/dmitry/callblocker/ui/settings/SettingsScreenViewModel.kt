@@ -54,7 +54,6 @@ class SettingsScreenViewModel @Inject constructor(
     private fun ConfigurationModel.toUiState(): SettingsScreenUiState {
         return SettingsScreenUiState(
             isScreenRoleGrand = isScreenRoleGrand,
-            isBlockUnknownNumberEnable = isBlockUnknownNumberEnable,
             isPushEnable = isPushEnable,
             numberOfBlockCallToStore = numberOfBlockCallToStore,
             appLanguage = AppLanguage.entries.find { it.code == language } ?: AppLanguage.ENG,

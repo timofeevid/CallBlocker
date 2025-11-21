@@ -5,9 +5,9 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dmitry.callblocker.core.Const
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
 import ru.dmitry.callblocker.domain.model.NotificationData
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.domain.usecase.CallScreeningDecisionInteractor
 import ru.dmitry.callblocker.domain.usecase.ShowBlockedCallNotificationUseCase

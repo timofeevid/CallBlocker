@@ -2,8 +2,8 @@ package ru.dmitry.callblocker.mock
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.dmitry.callblocker.data.api.PatternRepositoryApi
 import ru.dmitry.callblocker.data.model.PhonePattern
+import ru.dmitry.callblocker.domain.repository.PatternRepositoryApi
 
 /**
  * Mock implementation of PatternRepository for testing purposes

@@ -15,7 +15,6 @@ class CallScreeningDecisionInteractor(
         NULL_PHONE_NUMBER,
         KNOWN_CONTACT,
         BLOCKED_BY_PATTERN,
-        UNKNOWN_NUMBER_BLOCKING_ENABLED,
         ALLOWED_BY_DEFAULT
     }
 
@@ -38,12 +37,10 @@ class CallScreeningDecisionInteractor(
         }
 
         val isBlockedByPattern = isNumberBlockedByPatternUseCase(phoneNumber)
-        val shouldBlock =
-            config.isBlockUnknownNumberEnable || (config.isBlockByPatternEnable && isBlockedByPattern)
+        val shouldBlock = config.isBlockByPatternEnable && isBlockedByPattern
 
         val reason = when {
-            shouldBlock && isBlockedByPattern && config.isBlockByPatternEnable -> Reason.BLOCKED_BY_PATTERN
-            shouldBlock && config.isBlockUnknownNumberEnable -> Reason.UNKNOWN_NUMBER_BLOCKING_ENABLED
+            shouldBlock -> Reason.BLOCKED_BY_PATTERN
             else -> Reason.ALLOWED_BY_DEFAULT
         }
 

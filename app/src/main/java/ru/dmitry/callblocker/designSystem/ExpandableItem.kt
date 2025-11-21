@@ -39,13 +39,14 @@ fun <T : Enum<T>> ExpandableItem(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .clickable { expanded = !expanded },
+                .clickable { expanded = !expanded }
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -59,7 +60,7 @@ fun <T : Enum<T>> ExpandableItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Icon(
                 painter = painterResource(R.drawable.ic_expand_more),
                 contentDescription = if (expanded) "Collapse" else "Expand",
@@ -80,7 +81,7 @@ fun <T : Enum<T>> ExpandableItem(
                             .height(56.dp)
                             .selectable(
                                 selected = (currentValue == value),
-                                onClick = { 
+                                onClick = {
                                     onValueChanged(value)
                                     expanded = false
                                 },

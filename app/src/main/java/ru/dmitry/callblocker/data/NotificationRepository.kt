@@ -6,8 +6,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import ru.dmitry.callblocker.data.api.NotificationRepositoryApi
 import ru.dmitry.callblocker.domain.model.NotificationData
+import ru.dmitry.callblocker.domain.repository.NotificationRepositoryApi
 import ru.dmitry.callblocker.ui.MainActivity
 
 class NotificationRepository(

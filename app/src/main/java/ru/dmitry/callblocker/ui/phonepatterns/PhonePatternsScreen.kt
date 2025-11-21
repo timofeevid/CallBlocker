@@ -51,7 +51,7 @@ fun PhonePatternsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
@@ -78,6 +78,9 @@ fun PhonePatternsScreen(
 
             items(uiState.patterns) { pattern ->
                 PhonePatternItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     pattern = pattern,
                     onClick = {
                         bottomSheetPattern = pattern
@@ -110,24 +113,18 @@ fun PhonePatternsScreen(
                 bottomSheetPattern = null
                 isBottomSheetOpen = false
             },
-            onSave = { pattern, isNegative ->
-                if (pattern.isNotBlank()) {
-                    bottomSheetPattern
-                        ?.let { oldPattern ->
-                            viewModel.updatePattern(oldPattern, pattern, isNegative)
-                        }
-                        ?: run {
-                            viewModel.addPattern(pattern, isNegative)
-                        }
+            onSave = { newPattern ->
+                if (newPattern.pattern.isNotBlank()) {
+                    bottomSheetPattern?.let { oldPattern ->
+                        viewModel.updatePattern(oldPattern, newPattern)
+                    } ?: run {
+                        viewModel.addPattern(newPattern)
+                    }
                     bottomSheetPattern = null
                     isBottomSheetOpen = false
                 }
             },
-            onDelete = { pattern ->
-                viewModel.deletePattern(pattern)
-                bottomSheetPattern = null
-                isBottomSheetOpen = false
-            }
+            onDelete = { pattern -> viewModel.deletePattern(pattern) }
         )
     }
 }

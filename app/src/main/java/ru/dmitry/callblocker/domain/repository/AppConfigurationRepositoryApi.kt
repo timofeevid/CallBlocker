@@ -1,4 +1,4 @@
-package ru.dmitry.callblocker.data.api
+package ru.dmitry.callblocker.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.dmitry.callblocker.domain.model.ConfigurationModel

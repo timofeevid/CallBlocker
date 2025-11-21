@@ -4,7 +4,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import android.util.Log
 import ru.dmitry.callblocker.core.Const
-import ru.dmitry.callblocker.data.api.ContactsRepositoryApi
+import ru.dmitry.callblocker.domain.repository.ContactsRepositoryApi
 
 class ContactsRepository(
     private val context: Context

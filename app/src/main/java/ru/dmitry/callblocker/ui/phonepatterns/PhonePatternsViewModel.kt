@@ -20,12 +20,12 @@ class PhonePatternsViewModel @Inject constructor(
         .map { patterns -> PhonePatternsUiState(patterns) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, PhonePatternsUiState())
 
-    fun addPattern(pattern: String, isNegativePattern: Boolean) {
-        patternInteractor.addPhonePattern(PhonePattern(pattern, isNegativePattern))
+    fun addPattern(pattern: PhonePattern) {
+        patternInteractor.addPhonePattern(pattern)
     }
 
-    fun updatePattern(oldPattern: PhonePattern, pattern: String, isNegativePattern: Boolean) {
-        patternInteractor.updatePhonePattern(oldPattern, PhonePattern(pattern, isNegativePattern))
+    fun updatePattern(oldPattern: PhonePattern, newPattern: PhonePattern) {
+        patternInteractor.updatePhonePattern(oldPattern, newPattern)
     }
 
     fun deletePattern(pattern: PhonePattern) {

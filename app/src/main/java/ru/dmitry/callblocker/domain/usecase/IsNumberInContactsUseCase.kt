@@ -1,6 +1,6 @@
 package ru.dmitry.callblocker.domain.usecase
 
-import ru.dmitry.callblocker.data.api.ContactsRepositoryApi
+import ru.dmitry.callblocker.domain.repository.ContactsRepositoryApi
 
 class IsNumberInContactsUseCase(
     private val contactsRepository: ContactsRepositoryApi

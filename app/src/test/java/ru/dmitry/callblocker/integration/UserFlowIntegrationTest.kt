@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import ru.dmitry.callblocker.data.model.PhonePattern
+import ru.dmitry.callblocker.data.model.PhonePatternType
 import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
@@ -72,12 +73,10 @@ class UserFlowIntegrationTest {
     }
 
     private fun setConfiguration(
-        isBlockUnknownNumberEnable: Boolean = false,
         isBlockByPatternEnable: Boolean = true
     ) {
         val config = ConfigurationModel(
             isScreenRoleGrand = true,
-            isBlockUnknownNumberEnable = isBlockUnknownNumberEnable,
             isBlockByPatternEnable = isBlockByPatternEnable,
             isPushEnable = true,
             numberOfBlockCallToStore = 100,
@@ -105,7 +104,7 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "+7495*", isNegativePattern = true)
+                PhonePattern(pattern = "+7495*", isNegativePattern = true, type = PhonePatternType.RUSSIAN_MOBILE)
             ),
             ScreeningResult(true, CallScreeningDecisionInteractor.Reason.BLOCKED_BY_PATTERN)
         )
@@ -117,7 +116,7 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "+7495*", isNegativePattern = false)
+                PhonePattern(pattern = "+7495*", isNegativePattern = false, type = PhonePatternType.RUSSIAN_MOBILE)
             ),
             ScreeningResult(false, CallScreeningDecisionInteractor.Reason.ALLOWED_BY_DEFAULT)
         )
@@ -129,7 +128,7 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "8800*", isNegativePattern = false)
+                PhonePattern(pattern = "8800*", isNegativePattern = false, type = PhonePatternType.RUSSIAN_TOLL_FREE)
             ),
             ScreeningResult(false, CallScreeningDecisionInteractor.Reason.ALLOWED_BY_DEFAULT)
         )
@@ -141,7 +140,7 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "8800*", isNegativePattern = true)
+                PhonePattern(pattern = "8800*", isNegativePattern = true, type = PhonePatternType.RUSSIAN_TOLL_FREE)
             ),
             ScreeningResult(true, CallScreeningDecisionInteractor.Reason.BLOCKED_BY_PATTERN)
         )
@@ -153,7 +152,7 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "*", isNegativePattern = false)
+                PhonePattern(pattern = "*", isNegativePattern = false, type = PhonePatternType.RUSSIAN_MOBILE)
             ),
             ScreeningResult(false, CallScreeningDecisionInteractor.Reason.ALLOWED_BY_DEFAULT)
         )
@@ -165,7 +164,7 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "*", isNegativePattern = true)
+                PhonePattern(pattern = "*", isNegativePattern = true, type = PhonePatternType.RUSSIAN_MOBILE)
             ),
             ScreeningResult(true, CallScreeningDecisionInteractor.Reason.BLOCKED_BY_PATTERN)
         )
@@ -173,8 +172,8 @@ class UserFlowIntegrationTest {
         checkPhone(
             phone,
             listOf(
-                PhonePattern(pattern = "8800*", isNegativePattern = false),
-                PhonePattern(pattern = "*", isNegativePattern = true),
+                PhonePattern(pattern = "8800*", isNegativePattern = false, type = PhonePatternType.RUSSIAN_TOLL_FREE),
+                PhonePattern(pattern = "*", isNegativePattern = true, type = PhonePatternType.RUSSIAN_MOBILE),
             ),
             ScreeningResult(false, CallScreeningDecisionInteractor.Reason.ALLOWED_BY_DEFAULT)
         )
@@ -186,7 +185,7 @@ class UserFlowIntegrationTest {
         setConfiguration()
 
         // Step 2: Add a blocking pattern
-        val blockingPattern = PhonePattern(pattern = "+7***", isNegativePattern = true)
+        val blockingPattern = PhonePattern(pattern = "+7***", isNegativePattern = true, type = PhonePatternType.RUSSIAN_MOBILE)
         patternInteractor.addPhonePattern(blockingPattern)
 
         // Step 3: Verify pattern was saved
@@ -210,4 +209,5 @@ class UserFlowIntegrationTest {
         assertEquals(1, mockNotificationRepository.getNotificationCount())
         assertEquals(testNumber, mockNotificationRepository.getLastNotification()?.phoneNumber)
     }
+
 }

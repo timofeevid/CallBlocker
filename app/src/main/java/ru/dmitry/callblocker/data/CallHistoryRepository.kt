@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.core.Const
-import ru.dmitry.callblocker.data.api.AppConfigurationRepositoryApi
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.data.model.CallEntry
 import ru.dmitry.callblocker.domain.model.ScreenedCall
+import ru.dmitry.callblocker.domain.repository.AppConfigurationRepositoryApi
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
 
 class CallHistoryRepository(
     private val context: Context,

@@ -16,9 +16,6 @@
     <string name="enable_call_screening_button">Enable Call Screening</string>
     <string name="granted_status">Granted</string>
     <string name="not_granted_status">Not Granted</string>
-    <string name="call_blocking_title">Call Blocking</string>
-    <string name="block_unknown_numbers_label">Block Unknown Numbers</string>
-    <string name="block_unknown_numbers_description">When enabled, calls from numbers not in your contacts will be automatically rejected.</string>
     <string name="pattern_blocking_title">Pattern Blocking</string>
     <string name="block_by_pattern_label">Block by Patterns</string>
     <string name="block_by_pattern_description">When enabled, calls matching specified patterns will be automatically rejected.</string>
@@ -41,6 +38,7 @@
     <string name="add_phone_pattern">Add Pattern</string>
     <string name="phone_pattern_label">Phone Pattern</string>
     <string name="block_this_pattern">Block this pattern</string>
+    <string name="select_pattern">Select Pattern</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>

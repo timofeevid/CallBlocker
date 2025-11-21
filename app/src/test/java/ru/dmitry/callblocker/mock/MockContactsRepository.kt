@@ -1,6 +1,6 @@
 package ru.dmitry.callblocker.mock
 
-import ru.dmitry.callblocker.data.api.ContactsRepositoryApi
+import ru.dmitry.callblocker.domain.repository.ContactsRepositoryApi
 
 /**
  * Mock implementation of ContactsRepository for testing purposes

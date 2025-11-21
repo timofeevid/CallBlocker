@@ -1,7 +1,7 @@
 package ru.dmitry.callblocker.domain.usecase
 
-import ru.dmitry.callblocker.data.api.PatternRepositoryApi
 import ru.dmitry.callblocker.data.model.PhonePattern
+import ru.dmitry.callblocker.domain.repository.PatternRepositoryApi
 
 class IsNumberBlockedByPatternUseCase(
     private val patternRepository: PatternRepositoryApi
@@ -16,7 +16,10 @@ class IsNumberBlockedByPatternUseCase(
         return isBlockRequired(phoneNumber, patterns)
     }
 
-    private fun isBlockRequired(phoneNumber: String, patterns: List<PhonePattern>): Boolean {
+    private fun isBlockRequired(
+        phoneNumber: String,
+        patterns: List<PhonePattern>
+    ): Boolean {
         val patternResult = patterns.firstOrNull { pattern -> matchesPattern(phoneNumber, pattern.pattern) }
         return patternResult?.isNegativePattern ?: DEFAULT_CALL_BEHAIVIOR
     }

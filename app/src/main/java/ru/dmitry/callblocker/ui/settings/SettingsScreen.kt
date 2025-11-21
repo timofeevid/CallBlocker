@@ -43,21 +43,23 @@ fun SettingsScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(id = R.string.settings_screen_title),
             style = MaterialTheme.typography.headlineMedium
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -70,9 +72,9 @@ fun SettingsScreen(
                 onCheckedChange = { viewModel.updatePushEnabled(it) }
             )
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         OutlinedTextField(
             value = numberOfCallsText,
             onValueChange = { newText ->
@@ -84,11 +86,14 @@ fun SettingsScreen(
             label = { Text(stringResource(id = R.string.number_of_calls_to_store_setting)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp
+                ),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
 
         ExpandableItem(
@@ -104,7 +109,7 @@ fun SettingsScreen(
             onValueChanged = { viewModel.updateLanguage(it) },
             modifier = Modifier.fillMaxWidth()
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
 
         ExpandableItem(
@@ -120,14 +125,17 @@ fun SettingsScreen(
             onValueChanged = { viewModel.updateTheme(it) },
             modifier = Modifier.fillMaxWidth()
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { navController.navigate(Screen.PhonePatterns.route) }
-                .padding(vertical = 8.dp),
+                .padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

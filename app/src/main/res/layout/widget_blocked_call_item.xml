@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="12sp"
-        android:textColor="#FFFFFF" />
+        android:textColor="#CCCCCC" />
 
     <TextView
         android:id="@+id/widget_blocked_time"

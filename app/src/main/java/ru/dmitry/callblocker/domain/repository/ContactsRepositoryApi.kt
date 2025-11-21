@@ -1,4 +1,4 @@
-package ru.dmitry.callblocker.data.api
+package ru.dmitry.callblocker.domain.repository
 
 interface ContactsRepositoryApi {
     fun isNumberInContacts(phoneNumber: String): Boolean

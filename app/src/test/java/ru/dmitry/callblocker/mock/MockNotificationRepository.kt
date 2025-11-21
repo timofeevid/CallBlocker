@@ -1,7 +1,7 @@
 package ru.dmitry.callblocker.mock
 
-import ru.dmitry.callblocker.data.api.NotificationRepositoryApi
 import ru.dmitry.callblocker.domain.model.NotificationData
+import ru.dmitry.callblocker.domain.repository.NotificationRepositoryApi
 
 /**
  * Mock implementation of NotificationRepository for testing purposes

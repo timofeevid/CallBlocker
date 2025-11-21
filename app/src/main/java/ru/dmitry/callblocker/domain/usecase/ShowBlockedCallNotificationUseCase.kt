@@ -1,7 +1,7 @@
 package ru.dmitry.callblocker.domain.usecase
 
-import ru.dmitry.callblocker.data.api.NotificationRepositoryApi
 import ru.dmitry.callblocker.domain.model.NotificationData
+import ru.dmitry.callblocker.domain.repository.NotificationRepositoryApi
 
 class ShowBlockedCallNotificationUseCase(
     private val notificationRepository: NotificationRepositoryApi

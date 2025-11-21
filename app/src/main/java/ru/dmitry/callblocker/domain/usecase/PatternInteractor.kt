@@ -1,8 +1,10 @@
 package ru.dmitry.callblocker.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import ru.dmitry.callblocker.data.api.PatternRepositoryApi
+import kotlinx.coroutines.flow.map
 import ru.dmitry.callblocker.data.model.PhonePattern
+import ru.dmitry.callblocker.data.model.PhonePatternType
+import ru.dmitry.callblocker.domain.repository.PatternRepositoryApi
 
 class PatternInteractor(
     private val patternRepository: PatternRepositoryApi
@@ -30,6 +32,18 @@ class PatternInteractor(
     }
 
     fun getPhonePatternsFlow(): Flow<List<PhonePattern>> {
-        return patternRepository.observePhonePatterns()
+        return patternRepository
+            .observePhonePatterns()
+            .map { patterns: List<PhonePattern> ->
+                patterns.sortedWith(
+                    compareBy<PhonePattern> { it.isNegativePattern }.thenBy { pattern ->
+                        when (pattern.type) {
+                            PhonePatternType.RUSSIAN_MOBILE -> 0
+                            PhonePatternType.RUSSIAN_TOLL_FREE -> 1
+                            PhonePatternType.GENERIC -> 2
+                        }
+                    }
+                )
+            }
     }
 }

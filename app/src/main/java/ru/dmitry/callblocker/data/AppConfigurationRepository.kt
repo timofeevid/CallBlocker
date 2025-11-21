@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 import ru.dmitry.callblocker.core.Const
-import ru.dmitry.callblocker.data.api.AppConfigurationRepositoryApi
 import ru.dmitry.callblocker.domain.model.AppLanguage
 import ru.dmitry.callblocker.domain.model.AppThemeColor
 import ru.dmitry.callblocker.domain.model.ConfigurationModel
+import ru.dmitry.callblocker.domain.repository.AppConfigurationRepositoryApi
 
 class AppConfigurationRepository(
     private val context: Context
@@ -54,7 +54,6 @@ class AppConfigurationRepository(
     private fun createDefaultConfig(): ConfigurationModel {
         return ConfigurationModel(
             isScreenRoleGrand = false,
-            isBlockUnknownNumberEnable = false,
             isBlockByPatternEnable = true,
             isPushEnable = true,
             numberOfBlockCallToStore = 100,

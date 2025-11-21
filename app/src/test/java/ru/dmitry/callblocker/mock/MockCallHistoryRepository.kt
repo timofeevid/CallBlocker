@@ -2,9 +2,9 @@ package ru.dmitry.callblocker.mock
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.data.model.CallEntry
 import ru.dmitry.callblocker.domain.model.ScreenedCall
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
 
 /**
  * Mock implementation of CallHistoryRepository for testing purposes

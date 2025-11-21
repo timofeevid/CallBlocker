@@ -1,7 +1,7 @@
 package ru.dmitry.callblocker.mock
 
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.model.NotificationData
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import ru.dmitry.callblocker.domain.usecase.CallScreeningDecisionInteractor
 import ru.dmitry.callblocker.domain.usecase.ShowBlockedCallNotificationUseCase

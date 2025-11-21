@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import ru.dmitry.callblocker.data.api.CallHistoryRepositoryApi
+import ru.dmitry.callblocker.domain.repository.CallHistoryRepositoryApi
 import ru.dmitry.callblocker.domain.usecase.AppConfigurationInteractor
 import javax.inject.Inject
 
@@ -28,7 +28,6 @@ class HomeScreenViewModel @Inject constructor(
                 hasPermissions = isPermissionGrand,
                 screenedCalls = calls,
                 hasScreeningRole = config.isScreenRoleGrand,
-                blockUnknownCalls = config.isBlockUnknownNumberEnable,
                 blockByPattern = config.isBlockByPatternEnable,
                 lastBlockedCall = calls.firstOrNull { it.wasBlocked }
             )
@@ -43,12 +42,6 @@ class HomeScreenViewModel @Inject constructor(
     fun hasScreeningRole(boolean: Boolean) {
         val currentConfig = appConfigurationInteractor.getConfiguration()
         val newConfig = currentConfig.copy(isScreenRoleGrand = boolean)
-        appConfigurationInteractor.updateConfig(newConfig)
-    }
-
-    fun toggleBlockUnknownCalls(enabled: Boolean) {
-        val currentConfig = appConfigurationInteractor.getConfiguration()
-        val newConfig = currentConfig.copy(isBlockUnknownNumberEnable = enabled)
         appConfigurationInteractor.updateConfig(newConfig)
     }
 

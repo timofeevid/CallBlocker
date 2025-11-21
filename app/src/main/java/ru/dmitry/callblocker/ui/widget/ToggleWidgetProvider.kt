@@ -18,11 +18,11 @@ class ToggleWidgetProvider : AppWidgetProvider() {
     @Inject
     lateinit var appConfigurationInteractor: AppConfigurationInteractor
 
-    private var shouldBlockUnknownNumbers: Boolean
-        get() = appConfigurationInteractor.getConfiguration().isBlockUnknownNumberEnable
+    private var shouldBlockByPatternNumbers: Boolean
+        get() = appConfigurationInteractor.getConfiguration().isBlockByPatternEnable
         set(value) {
             val currentConfig = appConfigurationInteractor.getConfiguration()
-            val newConfig = currentConfig.copy(isBlockUnknownNumberEnable = value)
+            val newConfig = currentConfig.copy(isBlockByPatternEnable = value)
             appConfigurationInteractor.updateConfig(newConfig)
         }
 
@@ -42,7 +42,7 @@ class ToggleWidgetProvider : AppWidgetProvider() {
         when (intent.action) {
             ACTION_TOGGLE_BLOCK -> {
                 val blockStatus = intent.getBooleanExtra(EXTRA_BLOCK_STATUS, false)
-                shouldBlockUnknownNumbers = !blockStatus
+                shouldBlockByPatternNumbers = !blockStatus
                 updateWidget(context)
             }
         }
@@ -57,10 +57,10 @@ class ToggleWidgetProvider : AppWidgetProvider() {
 
         views.setTextViewText(
             R.id.widget_toggle,
-            if (shouldBlockUnknownNumbers) context.getString(R.string.widget_blocking_on) else context.getString(R.string.widget_blocking_off)
+            if (shouldBlockByPatternNumbers) context.getString(R.string.widget_blocking_on) else context.getString(R.string.widget_blocking_off)
         )
         
-        if (shouldBlockUnknownNumbers) {
+        if (shouldBlockByPatternNumbers) {
             views.setInt(R.id.widget_toggle, "setBackgroundResource", R.drawable.widget_button_background_enabled)
         } else {
             views.setInt(R.id.widget_toggle, "setBackgroundResource", R.drawable.widget_button_background_disabled)
@@ -68,7 +68,7 @@ class ToggleWidgetProvider : AppWidgetProvider() {
 
         val toggleIntent = Intent(context, ToggleWidgetProvider::class.java).apply {
             action = ACTION_TOGGLE_BLOCK
-            putExtra(EXTRA_BLOCK_STATUS, shouldBlockUnknownNumbers)
+            putExtra(EXTRA_BLOCK_STATUS, shouldBlockByPatternNumbers)
         }
         val togglePendingIntent = PendingIntent.getBroadcast(
             context,
