@@ -12,7 +12,11 @@ class MockContactsRepository : ContactsRepositoryApi {
     override fun isNumberInContacts(phoneNumber: String): Boolean {
         return contacts.contains(phoneNumber)
     }
-    
+
+    override fun getContactName(phoneNumber: String): String? {
+        return "Test contact name"
+    }
+
     fun addContact(phoneNumber: String) {
         contacts.add(phoneNumber)
     }
