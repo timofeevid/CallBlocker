@@ -10,7 +10,7 @@ class PhoneNumberFormatterTest {
     fun `getPhonePattern should return RUSSIAN_MOBILE for Russian mobile numbers`() {
         // Russian mobile numbers starting with 79
         assertEquals(
-            PhonePatternType.RUSSIAN_MOBILE,
+            PhonePatternType.RUSSIAN_MOBILE_PLUS,
             PhoneNumberFormatter.getPhonePattern("79123456789")
         )
         
@@ -19,10 +19,15 @@ class PhoneNumberFormatterTest {
             PhonePatternType.RUSSIAN_MOBILE,
             PhoneNumberFormatter.getPhonePattern("89123456789")
         )
+
+        assertEquals(
+            PhonePatternType.RUSSIAN_MOBILE,
+            PhoneNumberFormatter.getPhonePattern("84957800771")
+        )
         
         // Russian mobile numbers with formatting
         assertEquals(
-            PhonePatternType.RUSSIAN_MOBILE,
+            PhonePatternType.RUSSIAN_MOBILE_PLUS,
             PhoneNumberFormatter.getPhonePattern("+7 (912) 345-67-89")
         )
     }

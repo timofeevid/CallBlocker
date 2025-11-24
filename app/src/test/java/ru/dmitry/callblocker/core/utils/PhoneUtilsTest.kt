@@ -70,4 +70,11 @@ class PhoneNumberFormatterTest {
         val result = PhoneNumberFormatter.format(phonePattern.pattern, phonePattern.type)
         assertEquals("8 (800) 123-45-67", result)
     }
+
+    @Test
+    fun `format moscow phone with 8`() {
+        val phonePattern = PhonePattern("84957800771", true, PhonePatternType.RUSSIAN_MOBILE)
+        val result = PhoneNumberFormatter.format(phonePattern.pattern, phonePattern.type)
+        assertEquals("8 (495) 780-07-71", result)
+    }
 }

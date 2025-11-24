@@ -7,7 +7,8 @@ enum class PhonePatternType(
     val pattern: String,
     val displayName: String
 ) {
-    RUSSIAN_MOBILE("+# (###) ###-##-##", "+# (###) ###-##-##"),
+    RUSSIAN_MOBILE_PLUS("+# (###) ###-##-##", "+# (###) ###-##-##"),
+    RUSSIAN_MOBILE("# (###) ###-##-##", "# (###) ###-##-##"),
     RUSSIAN_TOLL_FREE("8 (800) ###-##-##", "8 (800) ###-##-##"),
     GENERIC("###-###-###-###", "###-###-###-###");
 

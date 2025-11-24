@@ -38,9 +38,10 @@ class PatternInteractor(
                 patterns.sortedWith(
                     compareBy<PhonePattern> { it.isNegativePattern }.thenBy { pattern ->
                         when (pattern.type) {
-                            PhonePatternType.RUSSIAN_MOBILE -> 0
-                            PhonePatternType.RUSSIAN_TOLL_FREE -> 1
-                            PhonePatternType.GENERIC -> 2
+                            PhonePatternType.RUSSIAN_MOBILE_PLUS -> 0
+                            PhonePatternType.RUSSIAN_MOBILE -> 1
+                            PhonePatternType.RUSSIAN_TOLL_FREE -> 2
+                            PhonePatternType.GENERIC -> 3
                         }
                     }
                 )

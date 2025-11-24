@@ -61,21 +61,14 @@ object PhoneNumberFormatter {
      */
     fun getPhonePattern(phoneNumber: String): PhonePatternType {
         val digits = phoneNumber.filter { it.isDigit() }
-        
-        // Russian mobile pattern: 11 digits starting with 7 or 8 followed by 9xx
-        if (digits.length == 11) {
-            val firstDigit = digits.firstOrNull()
-            if (firstDigit == '7' || firstDigit == '8') {
-                // Check if it's likely a mobile number (9xx)
-                if (digits[1] == '9') {
-                    return PhonePatternType.RUSSIAN_MOBILE
-                }
-                // Check if it's a toll-free number (8 800)
-                if (digits.startsWith("8800") || digits.startsWith("7800")) {
-                    return PhonePatternType.RUSSIAN_TOLL_FREE
-                }
-            }
+        val firstDigit = digits.firstOrNull()
+
+        return when {
+            digits.length != 11 -> PhonePatternType.GENERIC
+            digits.startsWith("8800") || digits.startsWith("7800") -> PhonePatternType.RUSSIAN_TOLL_FREE
+            firstDigit == '7' -> PhonePatternType.RUSSIAN_MOBILE_PLUS
+            firstDigit == '8' -> PhonePatternType.RUSSIAN_MOBILE
+            else -> PhonePatternType.GENERIC
         }
-        return PhonePatternType.GENERIC
     }
 }
